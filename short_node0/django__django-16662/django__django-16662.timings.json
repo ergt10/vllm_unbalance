@@ -1,0 +1,2447 @@
+{
+  "instance_id": "django__django-16662",
+  "env_prepare": {
+    "start_ts": 1766988450.2175667,
+    "end_ts": 1766988454.1905398,
+    "total_s": 3.972973108291626,
+    "environment_class": "docker",
+    "image": "docker.io/swebench/sweb.eval.x86_64.django_1776_django-16662:latest"
+  },
+  "steps": [
+    {
+      "step_index": 1,
+      "query": {
+        "start_ts": 1766988454.1918797,
+        "first_token_ts": 1766988454.32897,
+        "last_token_ts": 1766988456.2879221,
+        "prefill_s": 0.13709020614624023,
+        "decode_s": 1.9589521884918213,
+        "total_s": 2.0960423946380615
+      },
+      "tool": {
+        "start_ts": 1766988456.2879653,
+        "action": "ls -la",
+        "end_ts": 1766988456.4234827,
+        "total_s": 0.13551735877990723,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 2,
+      "query": {
+        "start_ts": 1766988456.4254735,
+        "first_token_ts": 1766988456.700366,
+        "last_token_ts": 1766988458.7014966,
+        "prefill_s": 0.27489256858825684,
+        "decode_s": 2.0011305809020996,
+        "total_s": 2.2760231494903564
+      },
+      "tool": {
+        "start_ts": 1766988458.7015913,
+        "action": "find django -type f -name \"*.py\" | grep -i migra",
+        "end_ts": 1766988458.8793912,
+        "total_s": 0.17779994010925293,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 3,
+      "query": {
+        "start_ts": 1766988458.8818796,
+        "first_token_ts": 1766988459.107532,
+        "last_token_ts": 1766988461.4262943,
+        "prefill_s": 0.22565245628356934,
+        "decode_s": 2.3187623023986816,
+        "total_s": 2.544414758682251
+      },
+      "tool": {
+        "start_ts": 1766988461.42636,
+        "action": "cat django/db/migrations/writer.py",
+        "end_ts": 1766988461.5764456,
+        "total_s": 0.1500856876373291,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 4,
+      "query": {
+        "start_ts": 1766988461.5784566,
+        "first_token_ts": 1766988461.8252916,
+        "last_token_ts": 1766988463.5030825,
+        "prefill_s": 0.24683499336242676,
+        "decode_s": 1.677790880203247,
+        "total_s": 1.9246258735656738
+      },
+      "tool": {
+        "start_ts": 1766988463.5031173,
+        "action": "cat django/core/management/commands/makemigrations.py",
+        "end_ts": 1766988463.654424,
+        "total_s": 0.1513066291809082,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 5,
+      "query": {
+        "start_ts": 1766988463.6568205,
+        "first_token_ts": 1766988463.9357588,
+        "last_token_ts": 1766988468.5185997,
+        "prefill_s": 0.27893829345703125,
+        "decode_s": 4.582840919494629,
+        "total_s": 4.86177921295166
+      },
+      "tool": {
+        "start_ts": 1766988468.5186667,
+        "action": "grep -A 10 \"Sort imports by the package\" django/db/migrations/writer.py",
+        "end_ts": 1766988468.6844213,
+        "total_s": 0.1657545566558838,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 6,
+      "query": {
+        "start_ts": 1766988468.6889133,
+        "first_token_ts": 1766988469.0091827,
+        "last_token_ts": 1766988471.289412,
+        "prefill_s": 0.3202693462371826,
+        "decode_s": 2.280229330062866,
+        "total_s": 2.600498676300049
+      },
+      "tool": {
+        "start_ts": 1766988471.289464,
+        "action": "find tests -type f -name \"*.py\" | grep -i migra",
+        "end_ts": 1766988471.4649942,
+        "total_s": 0.17553019523620605,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 7,
+      "query": {
+        "start_ts": 1766988471.4679444,
+        "first_token_ts": 1766988471.7969353,
+        "last_token_ts": 1766988473.2799995,
+        "prefill_s": 0.3289909362792969,
+        "decode_s": 1.4830641746520996,
+        "total_s": 1.8120551109313965
+      },
+      "tool": {
+        "start_ts": 1766988473.2800715,
+        "action": "grep -r \"import.*from django.db\" tests/migrations/",
+        "end_ts": 1766988473.435189,
+        "total_s": 0.15511751174926758,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 8,
+      "query": {
+        "start_ts": 1766988473.4373186,
+        "first_token_ts": 1766988473.699611,
+        "last_token_ts": 1766988474.1831336,
+        "prefill_s": 0.26229238510131836,
+        "decode_s": 0.4835226535797119,
+        "total_s": 0.7458150386810303
+      },
+      "tool": {
+        "start_ts": 1766988474.1831715,
+        "action": "cat tests/migrations/test_writer.py",
+        "end_ts": 1766988474.3278904,
+        "total_s": 0.14471888542175293,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 9,
+      "query": {
+        "start_ts": 1766988474.3308396,
+        "first_token_ts": 1766988474.5867453,
+        "last_token_ts": 1766988484.1811604,
+        "prefill_s": 0.2559056282043457,
+        "decode_s": 9.594415187835693,
+        "total_s": 9.850320816040039
+      },
+      "tool": {
+        "start_ts": 1766988484.1813154,
+        "action": "cat <<'EOF' > reproduce_issue.py\nimport datetime\nfrom django.db import migrations, models\nimport time\n\n# This is how new migration files are currently generated\ncurrent_imports = [\n    \"import datetime\",\n    \"from django.db import migrations, models\",\n    \"import time\"\n]\n\n# Sort imports by module name (current behavior)\nsorted_imports = sorted(current_imports, key=lambda i: i.split()[1])\nprint(\"Current behavior:\")\nfor imp in sorted_imports:\n    print(imp)\n\n# Expected behavior according to Django coding style\nexpected_imports = [\n    \"import datetime\",\n    \"import time\",\n    \"from django.db import migrations, models\"\n]\nprint(\"\\nExpected behavior:\")\nfor imp in expected_imports:\n    print(imp)\nEOF",
+        "end_ts": 1766988484.358461,
+        "total_s": 0.17714548110961914,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 10,
+      "query": {
+        "start_ts": 1766988484.3601463,
+        "first_token_ts": 1766988484.5472982,
+        "last_token_ts": 1766988484.8995986,
+        "prefill_s": 0.18715190887451172,
+        "decode_s": 0.35230040550231934,
+        "total_s": 0.539452314376831
+      },
+      "tool": {
+        "start_ts": 1766988484.8996334,
+        "action": "python reproduce_issue.py",
+        "end_ts": 1766988485.3755198,
+        "total_s": 0.47588634490966797,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 11,
+      "query": {
+        "start_ts": 1766988485.378295,
+        "first_token_ts": 1766988485.577756,
+        "last_token_ts": 1766988496.1414757,
+        "prefill_s": 0.1994609832763672,
+        "decode_s": 10.563719749450684,
+        "total_s": 10.76318073272705
+      },
+      "tool": {
+        "start_ts": 1766988496.141534,
+        "action": "sed -i 's/# Sort imports by the package \\/ module to be imported (the part after\\n        # \"from\" in \"from ... import ...\" or after \"import\" in \"import ...\").\\n        sorted_imports = sorted(imports, key=lambda i: i.split()[1])/# Separate imports into \"import\" and \"from\" statements\\n        import_statements = sorted([imp for imp in imports if imp.startswith(\"import \")])\\n        from_statements = sorted([imp for imp in imports if imp.startswith(\"from \")])\\n        # Combine the sorted statements with import statements first\\n        sorted_imports = import_statements + from_statements/' django/db/migrations/writer.py",
+        "end_ts": 1766988496.3034716,
+        "total_s": 0.16193747520446777,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 12,
+      "query": {
+        "start_ts": 1766988496.3054168,
+        "first_token_ts": 1766988496.5045173,
+        "last_token_ts": 1766988497.7323456,
+        "prefill_s": 0.19910049438476562,
+        "decode_s": 1.2278282642364502,
+        "total_s": 1.4269287586212158
+      },
+      "tool": {
+        "start_ts": 1766988497.7323933,
+        "action": "python reproduce_issue.py",
+        "end_ts": 1766988498.003555,
+        "total_s": 0.2711617946624756,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 13,
+      "query": {
+        "start_ts": 1766988498.0053983,
+        "first_token_ts": 1766988498.2023065,
+        "last_token_ts": 1766988514.2242296,
+        "prefill_s": 0.19690823554992676,
+        "decode_s": 16.021923065185547,
+        "total_s": 16.218831300735474
+      },
+      "tool": {
+        "start_ts": 1766988514.2243319,
+        "action": "cat <<'EOF' > test_migration_writer.py\nfrom django.db import migrations, models\nfrom django.db.migrations.writer import MigrationWriter\n\n# Create a simple migration with various imports\nmigration = type(\n    \"Migration\",\n    (migrations.Migration,),\n    {\n        \"operations\": [\n            migrations.AddField(\n                \"mymodel\",\n                \"myfield\",\n                models.DateTimeField(\n                    default=datetime.datetime(\n                        2012, 1, 1, 1, 1, tzinfo=datetime.timezone.utc\n                    ),\n                ),\n            ),\n        ]\n    },\n)\n\n# Generate the migration file content\nwriter = MigrationWriter(migration)\noutput = writer.as_string()\n\n# Check if the imports are ordered correctly\nprint(\"Generated migration file imports:\")\nimport_section = output.split('\\n\\n')[0]\nfor line in import_section.split('\\n'):\n    if line.startswith('import ') or line.startswith('from '):\n        print(line)\n\n# Verify the order is correct (import statements before from statements)\nimport_lines = [line for line in import_section.split('\\n') if line.startswith('import ')]\nfrom_lines = [line for line in import_section.split('\\n') if line.startswith('from ')]\nall_imports_correct = all(line.startswith('import ') for line in import_lines) and all(line.startswith('from ') for line in from_lines)\nprint(f\"\\nImports ordered correctly: {all_imports_correct}\")\nEOF",
+        "end_ts": 1766988514.4136531,
+        "total_s": 0.18932127952575684,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 14,
+      "query": {
+        "start_ts": 1766988514.4155085,
+        "first_token_ts": 1766988514.7282755,
+        "last_token_ts": 1766988515.241235,
+        "prefill_s": 0.31276702880859375,
+        "decode_s": 0.5129594802856445,
+        "total_s": 0.8257265090942383
+      },
+      "tool": {
+        "start_ts": 1766988515.241279,
+        "action": "python test_migration_writer.py",
+        "end_ts": 1766988515.5243566,
+        "total_s": 0.2830777168273926,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 15,
+      "query": {
+        "start_ts": 1766988515.5262365,
+        "first_token_ts": 1766988515.7419856,
+        "last_token_ts": 1766988517.392303,
+        "prefill_s": 0.21574902534484863,
+        "decode_s": 1.6503174304962158,
+        "total_s": 1.8660664558410645
+      },
+      "tool": {
+        "start_ts": 1766988517.3923495,
+        "action": "sed -i '1s/^/import datetime\\n/' test_migration_writer.py",
+        "end_ts": 1766988517.5751295,
+        "total_s": 0.18278002738952637,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 16,
+      "query": {
+        "start_ts": 1766988517.5770252,
+        "first_token_ts": 1766988517.9180715,
+        "last_token_ts": 1766988518.4678066,
+        "prefill_s": 0.3410463333129883,
+        "decode_s": 0.5497350692749023,
+        "total_s": 0.8907814025878906
+      },
+      "tool": {
+        "start_ts": 1766988518.4678552,
+        "action": "python test_migration_writer.py",
+        "end_ts": 1766988518.7572489,
+        "total_s": 0.28939366340637207,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 17,
+      "query": {
+        "start_ts": 1766988518.7594616,
+        "first_token_ts": 1766988518.9824202,
+        "last_token_ts": 1766988536.7568536,
+        "prefill_s": 0.22295856475830078,
+        "decode_s": 17.774433374404907,
+        "total_s": 17.997391939163208
+      },
+      "tool": {
+        "start_ts": 1766988536.756925,
+        "action": "cat <<'EOF' > test_migration_writer.py\nimport datetime\nfrom django.conf import settings\n\n# Configure Django settings\nsettings.configure(USE_TZ=True)\n\nfrom django.db import migrations, models\nfrom django.db.migrations.writer import MigrationWriter\n\n# Create a simple migration with various imports\nmigration = type(\n    \"Migration\",\n    (migrations.Migration,),\n    {\n        \"operations\": [\n            migrations.AddField(\n                \"mymodel\",\n                \"myfield\",\n                models.DateTimeField(\n                    default=datetime.datetime(\n                        2012, 1, 1, 1, 1, tzinfo=datetime.timezone.utc\n                    ),\n                ),\n            ),\n        ]\n    },\n)\n\n# Generate the migration file content\nwriter = MigrationWriter(migration)\noutput = writer.as_string()\n\n# Check if the imports are ordered correctly\nprint(\"Generated migration file imports:\")\nimport_section = output.split('\\n\\n')[0]\nfor line in import_section.split('\\n'):\n    if line.startswith('import ') or line.startswith('from '):\n        print(line)\n\n# Verify the order is correct (import statements before from statements)\nimport_lines = [line for line in import_section.split('\\n') if line.startswith('import ')]\nfrom_lines = [line for line in import_section.split('\\n') if line.startswith('from ')]\nall_imports_correct = all(line.startswith('import ') for line in import_lines) and all(line.startswith('from ') for line in from_lines)\nprint(f\"\\nImports ordered correctly: {all_imports_correct}\")\nEOF",
+        "end_ts": 1766988536.9059281,
+        "total_s": 0.1490030288696289,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 18,
+      "query": {
+        "start_ts": 1766988536.9080727,
+        "first_token_ts": 1766988537.064887,
+        "last_token_ts": 1766988537.8707423,
+        "prefill_s": 0.1568143367767334,
+        "decode_s": 0.8058552742004395,
+        "total_s": 0.9626696109771729
+      },
+      "tool": {
+        "start_ts": 1766988537.870796,
+        "action": "python test_migration_writer.py",
+        "end_ts": 1766988538.1523707,
+        "total_s": 0.28157472610473633,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 19,
+      "query": {
+        "start_ts": 1766988538.1545906,
+        "first_token_ts": 1766988538.4487252,
+        "last_token_ts": 1766988559.7502444,
+        "prefill_s": 0.29413461685180664,
+        "decode_s": 21.30151915550232,
+        "total_s": 21.595653772354126
+      },
+      "tool": {
+        "start_ts": 1766988559.7503088,
+        "action": "cat <<'EOF' > test_migration_writer.py\nimport datetime\nfrom django.conf import settings\n\n# Configure Django settings\nsettings.configure(USE_TZ=True)\n\nfrom django.db import migrations, models\nfrom django.db.migrations.writer import MigrationWriter\n\n# Create a simple migration with various imports\nmigration = type(\n    \"Migration\",\n    (migrations.Migration,),\n    {\n        \"operations\": [\n            migrations.AddField(\n                \"mymodel\",\n                \"myfield\",\n                models.DateTimeField(\n                    default=datetime.datetime(\n                        2012, 1, 1, 1, 1, tzinfo=datetime.timezone.utc\n                    ),\n                ),\n            ),\n        ]\n    },\n)\n\n# Generate the migration file content\nwriter = MigrationWriter(migration)\noutput = writer.as_string()\n\n# Extract and print the imports section\nprint(\"Generated migration file imports:\")\nlines = output.split('\\n')\nimports_section = []\ncapture_imports = False\nfor line in lines:\n    if line.startswith('# Generated by Django'):\n        continue\n    if line.strip() == '':\n        if capture_imports:\n            break\n        continue\n    if line.startswith('import ') or line.startswith('from '):\n        imports_section.append(line)\n        capture_imports = True\n\nfor line in imports_section:\n    print(line)\n\n# Verify the order is correct (import statements before from statements)\nimport_lines = [line for line in imports_section if line.startswith('import ')]\nfrom_lines = [line for line in imports_section if line.startswith('from ')]\nall_imports_correct = all(line.startswith('import ') for line in import_lines) and all(line.startswith('from ') for line in from_lines)\nprint(f\"\\nImports ordered correctly: {all_imports_correct}\")\nEOF",
+        "end_ts": 1766988559.8945043,
+        "total_s": 0.144195556640625,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 20,
+      "query": {
+        "start_ts": 1766988559.8965077,
+        "first_token_ts": 1766988560.5280054,
+        "last_token_ts": 1766988562.672914,
+        "prefill_s": 0.6314976215362549,
+        "decode_s": 2.1449086666107178,
+        "total_s": 2.7764062881469727
+      },
+      "tool": {
+        "start_ts": 1766988562.6729612,
+        "action": "python test_migration_writer.py",
+        "end_ts": 1766988562.942205,
+        "total_s": 0.2692437171936035,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 21,
+      "query": {
+        "start_ts": 1766988562.9450169,
+        "first_token_ts": 1766988563.3424218,
+        "last_token_ts": 1766988572.0024433,
+        "prefill_s": 0.39740490913391113,
+        "decode_s": 8.660021543502808,
+        "total_s": 9.057426452636719
+      },
+      "tool": {
+        "start_ts": 1766988572.0025108,
+        "action": "grep -r \"sorted.*imports\" django/",
+        "end_ts": 1766988572.2192178,
+        "total_s": 0.2167069911956787,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 22,
+      "query": {
+        "start_ts": 1766988572.2211215,
+        "first_token_ts": 1766988572.4115257,
+        "last_token_ts": 1766988576.0781667,
+        "prefill_s": 0.19040417671203613,
+        "decode_s": 3.6666409969329834,
+        "total_s": 3.8570451736450195
+      },
+      "tool": {
+        "start_ts": 1766988576.078216,
+        "action": "grep -r \"sort.*imports\" django/",
+        "end_ts": 1766988576.3339903,
+        "total_s": 0.25577425956726074,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 23,
+      "query": {
+        "start_ts": 1766988576.3359554,
+        "first_token_ts": 1766988576.6024628,
+        "last_token_ts": 1766988579.9303505,
+        "prefill_s": 0.2665073871612549,
+        "decode_s": 3.327887773513794,
+        "total_s": 3.594395160675049
+      },
+      "tool": {
+        "start_ts": 1766988579.9303982,
+        "action": "grep -r \"sort.*imports\" tests/",
+        "end_ts": 1766988580.1119485,
+        "total_s": 0.1815502643585205,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 24,
+      "query": {
+        "start_ts": 1766988580.113864,
+        "first_token_ts": 1766988581.16723,
+        "last_token_ts": 1766988584.1971078,
+        "prefill_s": 1.05336594581604,
+        "decode_s": 3.0298779010772705,
+        "total_s": 4.0832438468933105
+      },
+      "tool": {
+        "start_ts": 1766988584.1971595,
+        "action": "grep -A 10 \"def test_sorted_imports\" tests/migrations/test_writer.py",
+        "end_ts": 1766988584.3533216,
+        "total_s": 0.15616202354431152,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 25,
+      "query": {
+        "start_ts": 1766988584.3560784,
+        "first_token_ts": 1766988584.5273705,
+        "last_token_ts": 1766988585.9593387,
+        "prefill_s": 0.17129206657409668,
+        "decode_s": 1.4319682121276855,
+        "total_s": 1.6032602787017822
+      },
+      "tool": {
+        "start_ts": 1766988585.959391,
+        "action": "grep -A 20 \"def test_sorted_imports\" tests/migrations/test_writer.py",
+        "end_ts": 1766988586.105623,
+        "total_s": 0.14623188972473145,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 26,
+      "query": {
+        "start_ts": 1766988586.1079135,
+        "first_token_ts": 1766988586.5131576,
+        "last_token_ts": 1766988588.172869,
+        "prefill_s": 0.4052441120147705,
+        "decode_s": 1.6597113609313965,
+        "total_s": 2.064955472946167
+      },
+      "tool": {
+        "start_ts": 1766988588.172914,
+        "action": "grep -A 30 \"def test_sorted_imports\" tests/migrations/test_writer.py",
+        "end_ts": 1766988588.334489,
+        "total_s": 0.1615750789642334,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 27,
+      "query": {
+        "start_ts": 1766988588.3367183,
+        "first_token_ts": 1766988588.629043,
+        "last_token_ts": 1766988593.372217,
+        "prefill_s": 0.2923247814178467,
+        "decode_s": 4.743173837661743,
+        "total_s": 5.03549861907959
+      },
+      "tool": {
+        "start_ts": 1766988593.3722758,
+        "action": "grep -r \"migration_imports\" django/",
+        "end_ts": 1766988593.6323454,
+        "total_s": 0.2600696086883545,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 28,
+      "query": {
+        "start_ts": 1766988593.634764,
+        "first_token_ts": 1766988593.8904567,
+        "last_token_ts": 1766988595.4693637,
+        "prefill_s": 0.255692720413208,
+        "decode_s": 1.5789070129394531,
+        "total_s": 1.8345997333526611
+      },
+      "tool": {
+        "start_ts": 1766988595.469413,
+        "action": "grep -r \"migration_imports\" tests/",
+        "end_ts": 1766988595.6269352,
+        "total_s": 0.15752220153808594,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 29,
+      "query": {
+        "start_ts": 1766988595.6291528,
+        "first_token_ts": 1766988595.910563,
+        "last_token_ts": 1766988599.4960308,
+        "prefill_s": 0.28141021728515625,
+        "decode_s": 3.58546781539917,
+        "total_s": 3.866878032684326
+      },
+      "tool": {
+        "start_ts": 1766988599.4960716,
+        "action": "grep -r \"imports.*add\" django/",
+        "end_ts": 1766988599.7173893,
+        "total_s": 0.22131776809692383,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 30,
+      "query": {
+        "start_ts": 1766988599.7236555,
+        "first_token_ts": 1766988602.5100822,
+        "last_token_ts": 1766988614.1713493,
+        "prefill_s": 2.7864267826080322,
+        "decode_s": 11.661267042160034,
+        "total_s": 14.447693824768066
+      },
+      "tool": {
+        "start_ts": 1766988614.171397,
+        "action": "grep -r \"imports.*add\" tests/",
+        "end_ts": 1766988614.4249253,
+        "total_s": 0.253528356552124,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 31,
+      "query": {
+        "start_ts": 1766988614.4269094,
+        "first_token_ts": 1766988616.3515182,
+        "last_token_ts": 1766988622.4527602,
+        "prefill_s": 1.9246087074279785,
+        "decode_s": 6.1012420654296875,
+        "total_s": 8.025850772857666
+      },
+      "tool": {
+        "start_ts": 1766988622.4528065,
+        "action": "grep -r \"items\\[\\\"imports\\\"\\]\" django/",
+        "end_ts": 1766988622.6194708,
+        "total_s": 0.16666436195373535,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 32,
+      "query": {
+        "start_ts": 1766988622.6213915,
+        "first_token_ts": 1766988623.8243012,
+        "last_token_ts": 1766988629.633183,
+        "prefill_s": 1.2029097080230713,
+        "decode_s": 5.808881759643555,
+        "total_s": 7.011791467666626
+      },
+      "tool": {
+        "start_ts": 1766988629.633229,
+        "action": "grep -r \"items\\[\\\"imports\\\"\\]\" tests/",
+        "end_ts": 1766988629.7841432,
+        "total_s": 0.15091419219970703,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 33,
+      "query": {
+        "start_ts": 1766988629.786174,
+        "first_token_ts": 1766988631.045904,
+        "last_token_ts": 1766988639.653074,
+        "prefill_s": 1.2597298622131348,
+        "decode_s": 8.607170104980469,
+        "total_s": 9.866899967193604
+      },
+      "tool": {
+        "start_ts": 1766988639.6531305,
+        "action": "grep -r \"migration_imports\" django/db/migrations/writer.py",
+        "end_ts": 1766988639.818378,
+        "total_s": 0.16524744033813477,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 34,
+      "query": {
+        "start_ts": 1766988639.8209162,
+        "first_token_ts": 1766988640.0011313,
+        "last_token_ts": 1766988641.62911,
+        "prefill_s": 0.18021512031555176,
+        "decode_s": 1.627978801727295,
+        "total_s": 1.8081939220428467
+      },
+      "tool": {
+        "start_ts": 1766988641.6291378,
+        "action": "grep -r \"sorted.*migration_imports\" django/",
+        "end_ts": 1766988641.84058,
+        "total_s": 0.211442232131958,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 35,
+      "query": {
+        "start_ts": 1766988641.8425004,
+        "first_token_ts": 1766988642.213772,
+        "last_token_ts": 1766988643.651841,
+        "prefill_s": 0.37127161026000977,
+        "decode_s": 1.4380688667297363,
+        "total_s": 1.809340476989746
+      },
+      "tool": {
+        "start_ts": 1766988643.6518948,
+        "action": "grep -r \"sorted.*migration_imports\" tests/",
+        "end_ts": 1766988643.8136265,
+        "total_s": 0.16173171997070312,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 36,
+      "query": {
+        "start_ts": 1766988643.815557,
+        "first_token_ts": 1766988643.999744,
+        "last_token_ts": 1766988645.4340081,
+        "prefill_s": 0.1841869354248047,
+        "decode_s": 1.4342641830444336,
+        "total_s": 1.6184511184692383
+      },
+      "tool": {
+        "start_ts": 1766988645.4340637,
+        "action": "grep -r \"migration_imports.*add\" django/",
+        "end_ts": 1766988645.6366446,
+        "total_s": 0.20258092880249023,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 37,
+      "query": {
+        "start_ts": 1766988645.6392417,
+        "first_token_ts": 1766988646.08954,
+        "last_token_ts": 1766988647.6215482,
+        "prefill_s": 0.4502983093261719,
+        "decode_s": 1.532008171081543,
+        "total_s": 1.9823064804077148
+      },
+      "tool": {
+        "start_ts": 1766988647.621595,
+        "action": "grep -r \"migration_imports.*add\" tests/",
+        "end_ts": 1766988647.8003354,
+        "total_s": 0.1787405014038086,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 38,
+      "query": {
+        "start_ts": 1766988647.8022442,
+        "first_token_ts": 1766988648.1129196,
+        "last_token_ts": 1766988649.5874279,
+        "prefill_s": 0.31067538261413574,
+        "decode_s": 1.474508285522461,
+        "total_s": 1.7851836681365967
+      },
+      "tool": {
+        "start_ts": 1766988649.5874884,
+        "action": "grep -r \"extract_migration_imports\" django/",
+        "end_ts": 1766988649.832838,
+        "total_s": 0.24534964561462402,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 39,
+      "query": {
+        "start_ts": 1766988649.835995,
+        "first_token_ts": 1766988650.0922515,
+        "last_token_ts": 1766988651.606269,
+        "prefill_s": 0.2562565803527832,
+        "decode_s": 1.5140173435211182,
+        "total_s": 1.7702739238739014
+      },
+      "tool": {
+        "start_ts": 1766988651.6064286,
+        "action": "grep -r \"extract_migration_imports\" tests/",
+        "end_ts": 1766988651.7785375,
+        "total_s": 0.17210888862609863,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 40,
+      "query": {
+        "start_ts": 1766988651.7804523,
+        "first_token_ts": 1766988652.0244591,
+        "last_token_ts": 1766988653.3485243,
+        "prefill_s": 0.24400687217712402,
+        "decode_s": 1.3240652084350586,
+        "total_s": 1.5680720806121826
+      },
+      "tool": {
+        "start_ts": 1766988653.348572,
+        "action": "grep -r \"extract.*imports\" django/",
+        "end_ts": 1766988653.5459094,
+        "total_s": 0.19733738899230957,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 41,
+      "query": {
+        "start_ts": 1766988653.5487795,
+        "first_token_ts": 1766988653.7928388,
+        "last_token_ts": 1766988655.2635093,
+        "prefill_s": 0.24405932426452637,
+        "decode_s": 1.470670461654663,
+        "total_s": 1.7147297859191895
+      },
+      "tool": {
+        "start_ts": 1766988655.2635777,
+        "action": "grep -r \"extract.*imports\" tests/",
+        "end_ts": 1766988655.4406228,
+        "total_s": 0.17704510688781738,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 42,
+      "query": {
+        "start_ts": 1766988655.443301,
+        "first_token_ts": 1766988655.6379302,
+        "last_token_ts": 1766988656.985299,
+        "prefill_s": 0.19462919235229492,
+        "decode_s": 1.3473689556121826,
+        "total_s": 1.5419981479644775
+      },
+      "tool": {
+        "start_ts": 1766988656.9853504,
+        "action": "grep -r \"import.*from\" django/",
+        "end_ts": 1766988657.20413,
+        "total_s": 0.2187795639038086,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 43,
+      "query": {
+        "start_ts": 1766988657.2067394,
+        "first_token_ts": 1766988657.4829125,
+        "last_token_ts": 1766988658.9751804,
+        "prefill_s": 0.27617311477661133,
+        "decode_s": 1.4922678470611572,
+        "total_s": 1.7684409618377686
+      },
+      "tool": {
+        "start_ts": 1766988658.9752257,
+        "action": "grep -r \"import.*from\" tests/",
+        "end_ts": 1766988659.126944,
+        "total_s": 0.1517183780670166,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 44,
+      "query": {
+        "start_ts": 1766988659.1291072,
+        "first_token_ts": 1766988659.446459,
+        "last_token_ts": 1766988661.0584924,
+        "prefill_s": 0.3173518180847168,
+        "decode_s": 1.6120333671569824,
+        "total_s": 1.9293851852416992
+      },
+      "tool": {
+        "start_ts": 1766988661.0585535,
+        "action": "grep -r \"import_migration\" django/",
+        "end_ts": 1766988661.2482922,
+        "total_s": 0.18973875045776367,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 45,
+      "query": {
+        "start_ts": 1766988661.2508311,
+        "first_token_ts": 1766988661.6005392,
+        "last_token_ts": 1766988662.914473,
+        "prefill_s": 0.34970808029174805,
+        "decode_s": 1.3139338493347168,
+        "total_s": 1.6636419296264648
+      },
+      "tool": {
+        "start_ts": 1766988662.9145184,
+        "action": "grep -r \"import_migration\" tests/",
+        "end_ts": 1766988663.095991,
+        "total_s": 0.1814725399017334,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 46,
+      "query": {
+        "start_ts": 1766988663.0980914,
+        "first_token_ts": 1766988663.3301497,
+        "last_token_ts": 1766988665.2089398,
+        "prefill_s": 0.23205828666687012,
+        "decode_s": 1.8787901401519775,
+        "total_s": 2.1108484268188477
+      },
+      "tool": {
+        "start_ts": 1766988665.2090046,
+        "action": "grep -r \"import.*models\" django/",
+        "end_ts": 1766988665.426474,
+        "total_s": 0.2174694538116455,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 47,
+      "query": {
+        "start_ts": 1766988665.4286788,
+        "first_token_ts": 1766988665.8724337,
+        "last_token_ts": 1766988667.4361458,
+        "prefill_s": 0.4437549114227295,
+        "decode_s": 1.5637121200561523,
+        "total_s": 2.007467031478882
+      },
+      "tool": {
+        "start_ts": 1766988667.436199,
+        "action": "grep -r \"import.*models\" tests/",
+        "end_ts": 1766988667.6131556,
+        "total_s": 0.1769566535949707,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 48,
+      "query": {
+        "start_ts": 1766988667.6152487,
+        "first_token_ts": 1766988668.1252809,
+        "last_token_ts": 1766988672.7257457,
+        "prefill_s": 0.5100321769714355,
+        "decode_s": 4.600464820861816,
+        "total_s": 5.110496997833252
+      },
+      "tool": {
+        "start_ts": 1766988672.7258043,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py",
+        "end_ts": 1766988672.8831031,
+        "total_s": 0.15729880332946777,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 49,
+      "query": {
+        "start_ts": 1766988672.8852665,
+        "first_token_ts": 1766988673.6104176,
+        "last_token_ts": 1766988676.4837515,
+        "prefill_s": 0.7251510620117188,
+        "decode_s": 2.8733339309692383,
+        "total_s": 3.598484992980957
+      },
+      "tool": {
+        "start_ts": 1766988676.4838219,
+        "action": "grep -r \"import_migration\" django/db/migrations/writer.py",
+        "end_ts": 1766988676.6684208,
+        "total_s": 0.1845989227294922,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 50,
+      "query": {
+        "start_ts": 1766988676.6712635,
+        "first_token_ts": 1766988676.933057,
+        "last_token_ts": 1766988678.6322198,
+        "prefill_s": 0.2617936134338379,
+        "decode_s": 1.6991627216339111,
+        "total_s": 1.960956335067749
+      },
+      "tool": {
+        "start_ts": 1766988678.6322649,
+        "action": "grep -r \"extract_migration_imports\" django/db/migrations/writer.py",
+        "end_ts": 1766988678.794062,
+        "total_s": 0.16179704666137695,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 51,
+      "query": {
+        "start_ts": 1766988678.7960072,
+        "first_token_ts": 1766988678.9721353,
+        "last_token_ts": 1766988680.6926467,
+        "prefill_s": 0.17612814903259277,
+        "decode_s": 1.7205114364624023,
+        "total_s": 1.8966395854949951
+      },
+      "tool": {
+        "start_ts": 1766988680.6927195,
+        "action": "grep -r \"migration_imports\" django/db/migrations/writer.py",
+        "end_ts": 1766988680.8735883,
+        "total_s": 0.18086886405944824,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 52,
+      "query": {
+        "start_ts": 1766988680.8755827,
+        "first_token_ts": 1766988681.1928134,
+        "last_token_ts": 1766988686.7814286,
+        "prefill_s": 0.3172307014465332,
+        "decode_s": 5.58861517906189,
+        "total_s": 5.905845880508423
+      },
+      "tool": {
+        "start_ts": 1766988686.7814848,
+        "action": "grep -r \"sorted.*migration_imports\" django/db/migrations/writer.py",
+        "end_ts": 1766988686.9408906,
+        "total_s": 0.15940570831298828,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 53,
+      "query": {
+        "start_ts": 1766988686.9428155,
+        "first_token_ts": 1766988688.2486722,
+        "last_token_ts": 1766988695.346819,
+        "prefill_s": 1.305856704711914,
+        "decode_s": 7.098146677017212,
+        "total_s": 8.404003381729126
+      },
+      "tool": {
+        "start_ts": 1766988695.346867,
+        "action": "grep -r \"import.*models\" django/db/migrations/writer.py",
+        "end_ts": 1766988695.4876356,
+        "total_s": 0.14076852798461914,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 54,
+      "query": {
+        "start_ts": 1766988695.4895804,
+        "first_token_ts": 1766988696.9541416,
+        "last_token_ts": 1766988705.600111,
+        "prefill_s": 1.4645612239837646,
+        "decode_s": 8.64596939086914,
+        "total_s": 10.110530614852905
+      },
+      "tool": {
+        "start_ts": 1766988705.6001554,
+        "action": "grep -r \"import.*migrations\" django/db/migrations/writer.py",
+        "end_ts": 1766988705.745411,
+        "total_s": 0.14525556564331055,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 55,
+      "query": {
+        "start_ts": 1766988705.7473843,
+        "first_token_ts": 1766988706.4894946,
+        "last_token_ts": 1766988715.9606252,
+        "prefill_s": 0.7421102523803711,
+        "decode_s": 9.471130609512329,
+        "total_s": 10.2132408618927
+      },
+      "tool": {
+        "start_ts": 1766988715.960659,
+        "action": "grep -r \"import.*migrations\" tests/migrations/test_writer.py",
+        "end_ts": 1766988716.0888207,
+        "total_s": 0.12816166877746582,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 56,
+      "query": {
+        "start_ts": 1766988716.09076,
+        "first_token_ts": 1766988717.5362694,
+        "last_token_ts": 1766988727.4949605,
+        "prefill_s": 1.445509433746338,
+        "decode_s": 9.958691120147705,
+        "total_s": 11.404200553894043
+      },
+      "tool": {
+        "start_ts": 1766988727.4949956,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py",
+        "end_ts": 1766988727.630606,
+        "total_s": 0.13561034202575684,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 57,
+      "query": {
+        "start_ts": 1766988727.6332312,
+        "first_token_ts": 1766988729.7054615,
+        "last_token_ts": 1766988746.2286112,
+        "prefill_s": 2.072230339050293,
+        "decode_s": 16.523149728775024,
+        "total_s": 18.595380067825317
+      },
+      "tool": {
+        "start_ts": 1766988746.2286744,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\"",
+        "end_ts": 1766988746.3892403,
+        "total_s": 0.16056585311889648,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 58,
+      "query": {
+        "start_ts": 1766988746.39186,
+        "first_token_ts": 1766988749.3481061,
+        "last_token_ts": 1766988771.7461216,
+        "prefill_s": 2.9562461376190186,
+        "decode_s": 22.39801549911499,
+        "total_s": 25.35426163673401
+      },
+      "tool": {
+        "start_ts": 1766988771.7461717,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\"",
+        "end_ts": 1766988771.890086,
+        "total_s": 0.14391422271728516,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 59,
+      "query": {
+        "start_ts": 1766988771.8920875,
+        "first_token_ts": 1766988777.0051422,
+        "last_token_ts": 1766988791.3055842,
+        "prefill_s": 5.1130547523498535,
+        "decode_s": 14.300441980361938,
+        "total_s": 19.413496732711792
+      },
+      "tool": {
+        "start_ts": 1766988791.3056433,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\"",
+        "end_ts": 1766988791.4550698,
+        "total_s": 0.14942646026611328,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 60,
+      "query": {
+        "start_ts": 1766988791.4579449,
+        "first_token_ts": 1766988791.713208,
+        "last_token_ts": 1766988795.049913,
+        "prefill_s": 0.255263090133667,
+        "decode_s": 3.336704969406128,
+        "total_s": 3.591968059539795
+      },
+      "tool": {
+        "start_ts": 1766988795.0499496,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\"",
+        "end_ts": 1766988795.20874,
+        "total_s": 0.15879034996032715,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 61,
+      "query": {
+        "start_ts": 1766988795.210686,
+        "first_token_ts": 1766988795.530872,
+        "last_token_ts": 1766988800.3716707,
+        "prefill_s": 0.32018613815307617,
+        "decode_s": 4.840798616409302,
+        "total_s": 5.160984754562378
+      },
+      "tool": {
+        "start_ts": 1766988800.3717313,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\"",
+        "end_ts": 1766988800.5234344,
+        "total_s": 0.1517031192779541,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 62,
+      "query": {
+        "start_ts": 1766988800.5252705,
+        "first_token_ts": 1766988800.8106256,
+        "last_token_ts": 1766988806.670304,
+        "prefill_s": 0.2853550910949707,
+        "decode_s": 5.859678506851196,
+        "total_s": 6.145033597946167
+      },
+      "tool": {
+        "start_ts": 1766988806.6703804,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\"",
+        "end_ts": 1766988806.8280602,
+        "total_s": 0.15767979621887207,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 63,
+      "query": {
+        "start_ts": 1766988806.8299217,
+        "first_token_ts": 1766988807.1502774,
+        "last_token_ts": 1766988811.964465,
+        "prefill_s": 0.3203556537628174,
+        "decode_s": 4.814187526702881,
+        "total_s": 5.134543180465698
+      },
+      "tool": {
+        "start_ts": 1766988811.9645138,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\"",
+        "end_ts": 1766988812.1580606,
+        "total_s": 0.19354677200317383,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 64,
+      "query": {
+        "start_ts": 1766988812.1600537,
+        "first_token_ts": 1766988812.3917682,
+        "last_token_ts": 1766988817.7510073,
+        "prefill_s": 0.23171448707580566,
+        "decode_s": 5.359239101409912,
+        "total_s": 5.590953588485718
+      },
+      "tool": {
+        "start_ts": 1766988817.7510512,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\"",
+        "end_ts": 1766988817.904476,
+        "total_s": 0.15342473983764648,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 65,
+      "query": {
+        "start_ts": 1766988817.9068797,
+        "first_token_ts": 1766988818.2231421,
+        "last_token_ts": 1766988823.9721582,
+        "prefill_s": 0.31626248359680176,
+        "decode_s": 5.749016046524048,
+        "total_s": 6.06527853012085
+      },
+      "tool": {
+        "start_ts": 1766988823.9722004,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\"",
+        "end_ts": 1766988824.1247454,
+        "total_s": 0.15254497528076172,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 66,
+      "query": {
+        "start_ts": 1766988824.1264625,
+        "first_token_ts": 1766988824.473096,
+        "last_token_ts": 1766988849.0283065,
+        "prefill_s": 0.3466334342956543,
+        "decode_s": 24.55521059036255,
+        "total_s": 24.901844024658203
+      },
+      "tool": {
+        "start_ts": 1766988849.0283523,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\"",
+        "end_ts": 1766988849.1839066,
+        "total_s": 0.15555429458618164,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 67,
+      "query": {
+        "start_ts": 1766988849.1865091,
+        "first_token_ts": 1766988849.7031682,
+        "last_token_ts": 1766988856.1266198,
+        "prefill_s": 0.5166590213775635,
+        "decode_s": 6.423451662063599,
+        "total_s": 6.940110683441162
+      },
+      "tool": {
+        "start_ts": 1766988856.1266744,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\"",
+        "end_ts": 1766988856.283526,
+        "total_s": 0.15685153007507324,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 68,
+      "query": {
+        "start_ts": 1766988856.2857378,
+        "first_token_ts": 1766988856.5385022,
+        "last_token_ts": 1766988864.1782572,
+        "prefill_s": 0.2527644634246826,
+        "decode_s": 7.639755010604858,
+        "total_s": 7.892519474029541
+      },
+      "tool": {
+        "start_ts": 1766988864.1783957,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\"",
+        "end_ts": 1766988864.3204298,
+        "total_s": 0.14203405380249023,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 69,
+      "query": {
+        "start_ts": 1766988864.3230224,
+        "first_token_ts": 1766988864.5378575,
+        "last_token_ts": 1766988871.9522488,
+        "prefill_s": 0.21483516693115234,
+        "decode_s": 7.414391279220581,
+        "total_s": 7.629226446151733
+      },
+      "tool": {
+        "start_ts": 1766988871.9523067,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\"",
+        "end_ts": 1766988872.1007748,
+        "total_s": 0.148468017578125,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 70,
+      "query": {
+        "start_ts": 1766988872.1032836,
+        "first_token_ts": 1766988872.4400399,
+        "last_token_ts": 1766988885.212954,
+        "prefill_s": 0.33675622940063477,
+        "decode_s": 12.772914171218872,
+        "total_s": 13.109670400619507
+      },
+      "tool": {
+        "start_ts": 1766988885.21301,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\"",
+        "end_ts": 1766988885.3538315,
+        "total_s": 0.1408214569091797,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 71,
+      "query": {
+        "start_ts": 1766988885.355768,
+        "first_token_ts": 1766988885.5548604,
+        "last_token_ts": 1766988895.3465805,
+        "prefill_s": 0.19909238815307617,
+        "decode_s": 9.791720151901245,
+        "total_s": 9.990812540054321
+      },
+      "tool": {
+        "start_ts": 1766988895.3466322,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\"",
+        "end_ts": 1766988895.5114353,
+        "total_s": 0.16480302810668945,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 72,
+      "query": {
+        "start_ts": 1766988895.513331,
+        "first_token_ts": 1766988896.0713618,
+        "last_token_ts": 1766988909.0142713,
+        "prefill_s": 0.5580308437347412,
+        "decode_s": 12.942909479141235,
+        "total_s": 13.500940322875977
+      },
+      "tool": {
+        "start_ts": 1766988909.0143237,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\"",
+        "end_ts": 1766988909.1345572,
+        "total_s": 0.12023353576660156,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 73,
+      "query": {
+        "start_ts": 1766988909.1363263,
+        "first_token_ts": 1766988910.2976575,
+        "last_token_ts": 1766988983.901177,
+        "prefill_s": 1.1613311767578125,
+        "decode_s": 73.60351943969727,
+        "total_s": 74.76485061645508
+      },
+      "tool": {
+        "start_ts": 1766988983.9012358,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\"",
+        "end_ts": 1766988984.0535119,
+        "total_s": 0.15227603912353516,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 74,
+      "query": {
+        "start_ts": 1766988984.0554686,
+        "first_token_ts": 1766988988.7128017,
+        "last_token_ts": 1766989070.9691987,
+        "prefill_s": 4.657333135604858,
+        "decode_s": 82.25639700889587,
+        "total_s": 86.91373014450073
+      },
+      "tool": {
+        "start_ts": 1766989070.9692702,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\"",
+        "end_ts": 1766989071.1228635,
+        "total_s": 0.1535933017730713,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 75,
+      "query": {
+        "start_ts": 1766989071.1255574,
+        "first_token_ts": 1766989081.0452437,
+        "last_token_ts": 1766989164.5002306,
+        "prefill_s": 9.919686317443848,
+        "decode_s": 83.4549868106842,
+        "total_s": 93.37467312812805
+      },
+      "tool": {
+        "start_ts": 1766989164.5002885,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\"",
+        "end_ts": 1766989164.643029,
+        "total_s": 0.14274048805236816,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 76,
+      "query": {
+        "start_ts": 1766989164.6451004,
+        "first_token_ts": 1766989170.258471,
+        "last_token_ts": 1766989184.4683185,
+        "prefill_s": 5.613370656967163,
+        "decode_s": 14.209847450256348,
+        "total_s": 19.82321810722351
+      },
+      "tool": {
+        "start_ts": 1766989184.468376,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\"",
+        "end_ts": 1766989184.6173863,
+        "total_s": 0.14901041984558105,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 77,
+      "query": {
+        "start_ts": 1766989184.6193714,
+        "first_token_ts": 1766989184.8446116,
+        "last_token_ts": 1766989194.8178952,
+        "prefill_s": 0.22524023056030273,
+        "decode_s": 9.973283529281616,
+        "total_s": 10.198523759841919
+      },
+      "tool": {
+        "start_ts": 1766989194.817968,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\"",
+        "end_ts": 1766989194.9614277,
+        "total_s": 0.14345979690551758,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 78,
+      "query": {
+        "start_ts": 1766989194.963286,
+        "first_token_ts": 1766989195.3097024,
+        "last_token_ts": 1766989206.122203,
+        "prefill_s": 0.3464164733886719,
+        "decode_s": 10.812500715255737,
+        "total_s": 11.15891718864441
+      },
+      "tool": {
+        "start_ts": 1766989206.1222727,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\"",
+        "end_ts": 1766989206.3003755,
+        "total_s": 0.17810273170471191,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 79,
+      "query": {
+        "start_ts": 1766989206.3022723,
+        "first_token_ts": 1766989206.5097983,
+        "last_token_ts": 1766989217.849848,
+        "prefill_s": 0.20752596855163574,
+        "decode_s": 11.340049743652344,
+        "total_s": 11.54757571220398
+      },
+      "tool": {
+        "start_ts": 1766989217.8499086,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\"",
+        "end_ts": 1766989217.9958591,
+        "total_s": 0.1459505558013916,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 80,
+      "query": {
+        "start_ts": 1766989217.997943,
+        "first_token_ts": 1766989218.4280238,
+        "last_token_ts": 1766989269.2969875,
+        "prefill_s": 0.4300808906555176,
+        "decode_s": 50.86896371841431,
+        "total_s": 51.299044609069824
+      },
+      "tool": {
+        "start_ts": 1766989269.2970495,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\"",
+        "end_ts": 1766989269.4463913,
+        "total_s": 0.14934182167053223,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 81,
+      "query": {
+        "start_ts": 1766989269.4483678,
+        "first_token_ts": 1766989269.6699152,
+        "last_token_ts": 1766989281.3766816,
+        "prefill_s": 0.22154736518859863,
+        "decode_s": 11.706766366958618,
+        "total_s": 11.928313732147217
+      },
+      "tool": {
+        "start_ts": 1766989281.3767734,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\"",
+        "end_ts": 1766989281.5258355,
+        "total_s": 0.1490621566772461,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 82,
+      "query": {
+        "start_ts": 1766989281.5276697,
+        "first_token_ts": 1766989282.1052794,
+        "last_token_ts": 1766989293.568743,
+        "prefill_s": 0.5776097774505615,
+        "decode_s": 11.463463544845581,
+        "total_s": 12.041073322296143
+      },
+      "tool": {
+        "start_ts": 1766989293.5688105,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\"",
+        "end_ts": 1766989293.7197294,
+        "total_s": 0.15091896057128906,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 83,
+      "query": {
+        "start_ts": 1766989293.7219808,
+        "first_token_ts": 1766989293.9786808,
+        "last_token_ts": 1766989305.96364,
+        "prefill_s": 0.2567000389099121,
+        "decode_s": 11.984959125518799,
+        "total_s": 12.241659164428711
+      },
+      "tool": {
+        "start_ts": 1766989305.9637215,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\"",
+        "end_ts": 1766989306.118517,
+        "total_s": 0.15479540824890137,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 84,
+      "query": {
+        "start_ts": 1766989306.12058,
+        "first_token_ts": 1766989306.4389317,
+        "last_token_ts": 1766989319.6929746,
+        "prefill_s": 0.31835174560546875,
+        "decode_s": 13.254042863845825,
+        "total_s": 13.572394609451294
+      },
+      "tool": {
+        "start_ts": 1766989319.6930435,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\"",
+        "end_ts": 1766989319.8392882,
+        "total_s": 0.14624476432800293,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 85,
+      "query": {
+        "start_ts": 1766989319.8412397,
+        "first_token_ts": 1766989320.1335418,
+        "last_token_ts": 1766989336.453325,
+        "prefill_s": 0.29230213165283203,
+        "decode_s": 16.319783210754395,
+        "total_s": 16.612085342407227
+      },
+      "tool": {
+        "start_ts": 1766989336.4533937,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\"",
+        "end_ts": 1766989336.625475,
+        "total_s": 0.17208123207092285,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 86,
+      "query": {
+        "start_ts": 1766989336.6274662,
+        "first_token_ts": 1766989336.8853576,
+        "last_token_ts": 1766989350.9445426,
+        "prefill_s": 0.2578914165496826,
+        "decode_s": 14.059185028076172,
+        "total_s": 14.317076444625854
+      },
+      "tool": {
+        "start_ts": 1766989350.9446175,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\"",
+        "end_ts": 1766989351.090925,
+        "total_s": 0.14630746841430664,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 87,
+      "query": {
+        "start_ts": 1766989351.0928886,
+        "first_token_ts": 1766989351.298232,
+        "last_token_ts": 1766989365.4652975,
+        "prefill_s": 0.20534348487854004,
+        "decode_s": 14.167065382003784,
+        "total_s": 14.372408866882324
+      },
+      "tool": {
+        "start_ts": 1766989365.465385,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\"",
+        "end_ts": 1766989365.6131206,
+        "total_s": 0.147735595703125,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 88,
+      "query": {
+        "start_ts": 1766989365.6150608,
+        "first_token_ts": 1766989365.8371089,
+        "last_token_ts": 1766989380.0636091,
+        "prefill_s": 0.22204804420471191,
+        "decode_s": 14.226500272750854,
+        "total_s": 14.448548316955566
+      },
+      "tool": {
+        "start_ts": 1766989380.0636678,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\"",
+        "end_ts": 1766989380.2422287,
+        "total_s": 0.17856097221374512,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 89,
+      "query": {
+        "start_ts": 1766989380.2440727,
+        "first_token_ts": 1766989380.6106188,
+        "last_token_ts": 1766989394.8107536,
+        "prefill_s": 0.3665461540222168,
+        "decode_s": 14.200134754180908,
+        "total_s": 14.566680908203125
+      },
+      "tool": {
+        "start_ts": 1766989394.8108156,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\"",
+        "end_ts": 1766989394.957099,
+        "total_s": 0.14628338813781738,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 90,
+      "query": {
+        "start_ts": 1766989394.9590454,
+        "first_token_ts": 1766989395.161109,
+        "last_token_ts": 1766989410.0695767,
+        "prefill_s": 0.20206356048583984,
+        "decode_s": 14.908467769622803,
+        "total_s": 15.110531330108643
+      },
+      "tool": {
+        "start_ts": 1766989410.0696578,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\"",
+        "end_ts": 1766989410.2322342,
+        "total_s": 0.16257643699645996,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 91,
+      "query": {
+        "start_ts": 1766989410.234912,
+        "first_token_ts": 1766989410.4646378,
+        "last_token_ts": 1766989425.9305027,
+        "prefill_s": 0.22972583770751953,
+        "decode_s": 15.465864896774292,
+        "total_s": 15.695590734481812
+      },
+      "tool": {
+        "start_ts": 1766989425.930569,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\"",
+        "end_ts": 1766989426.071406,
+        "total_s": 0.1408369541168213,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 92,
+      "query": {
+        "start_ts": 1766989426.073337,
+        "first_token_ts": 1766989426.295125,
+        "last_token_ts": 1766989442.1360643,
+        "prefill_s": 0.2217879295349121,
+        "decode_s": 15.840939283370972,
+        "total_s": 16.062727212905884
+      },
+      "tool": {
+        "start_ts": 1766989442.1361322,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\"",
+        "end_ts": 1766989442.2858896,
+        "total_s": 0.14975738525390625,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 93,
+      "query": {
+        "start_ts": 1766989442.287848,
+        "first_token_ts": 1766989442.5183911,
+        "last_token_ts": 1766989458.7870727,
+        "prefill_s": 0.2305431365966797,
+        "decode_s": 16.268681526184082,
+        "total_s": 16.49922466278076
+      },
+      "tool": {
+        "start_ts": 1766989458.7871406,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\"",
+        "end_ts": 1766989458.9259973,
+        "total_s": 0.1388566493988037,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 94,
+      "query": {
+        "start_ts": 1766989458.9280214,
+        "first_token_ts": 1766989459.7972896,
+        "last_token_ts": 1766989494.1627924,
+        "prefill_s": 0.8692681789398193,
+        "decode_s": 34.36550283432007,
+        "total_s": 35.23477101325989
+      },
+      "tool": {
+        "start_ts": 1766989494.1628754,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\"",
+        "end_ts": 1766989494.322386,
+        "total_s": 0.15951061248779297,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 95,
+      "query": {
+        "start_ts": 1766989494.325176,
+        "first_token_ts": 1766989495.0281568,
+        "last_token_ts": 1766989539.9323509,
+        "prefill_s": 0.7029807567596436,
+        "decode_s": 44.90419411659241,
+        "total_s": 45.60717487335205
+      },
+      "tool": {
+        "start_ts": 1766989539.9324193,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\"",
+        "end_ts": 1766989540.0848,
+        "total_s": 0.15238070487976074,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 96,
+      "query": {
+        "start_ts": 1766989540.0868738,
+        "first_token_ts": 1766989540.3373148,
+        "last_token_ts": 1766989557.1359973,
+        "prefill_s": 0.2504410743713379,
+        "decode_s": 16.79868245124817,
+        "total_s": 17.049123525619507
+      },
+      "tool": {
+        "start_ts": 1766989557.1360655,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\"",
+        "end_ts": 1766989557.2887821,
+        "total_s": 0.15271663665771484,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 97,
+      "query": {
+        "start_ts": 1766989557.2907383,
+        "first_token_ts": 1766989557.512118,
+        "last_token_ts": 1766989573.0062315,
+        "prefill_s": 0.22137975692749023,
+        "decode_s": 15.494113445281982,
+        "total_s": 15.715493202209473
+      },
+      "tool": {
+        "start_ts": 1766989573.0063155,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\"",
+        "end_ts": 1766989573.1390402,
+        "total_s": 0.13272476196289062,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 98,
+      "query": {
+        "start_ts": 1766989573.141903,
+        "first_token_ts": 1766989573.4370513,
+        "last_token_ts": 1766989589.864523,
+        "prefill_s": 0.2951483726501465,
+        "decode_s": 16.42747163772583,
+        "total_s": 16.722620010375977
+      },
+      "tool": {
+        "start_ts": 1766989589.8645902,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\"",
+        "end_ts": 1766989590.0270014,
+        "total_s": 0.16241121292114258,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 99,
+      "query": {
+        "start_ts": 1766989590.0289154,
+        "first_token_ts": 1766989590.394126,
+        "last_token_ts": 1766989607.4293563,
+        "prefill_s": 0.36521053314208984,
+        "decode_s": 17.0352303981781,
+        "total_s": 17.40044093132019
+      },
+      "tool": {
+        "start_ts": 1766989607.4294271,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\"",
+        "end_ts": 1766989607.560061,
+        "total_s": 0.13063383102416992,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 100,
+      "query": {
+        "start_ts": 1766989607.5619328,
+        "first_token_ts": 1766989607.781475,
+        "last_token_ts": 1766989625.3764324,
+        "prefill_s": 0.2195422649383545,
+        "decode_s": 17.59495735168457,
+        "total_s": 17.814499616622925
+      },
+      "tool": {
+        "start_ts": 1766989625.3765044,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\"",
+        "end_ts": 1766989625.5345783,
+        "total_s": 0.15807390213012695,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 101,
+      "query": {
+        "start_ts": 1766989625.5365357,
+        "first_token_ts": 1766989625.8035939,
+        "last_token_ts": 1766989644.3489997,
+        "prefill_s": 0.2670581340789795,
+        "decode_s": 18.545405864715576,
+        "total_s": 18.812463998794556
+      },
+      "tool": {
+        "start_ts": 1766989644.3490713,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\"",
+        "end_ts": 1766989644.5028696,
+        "total_s": 0.15379834175109863,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 102,
+      "query": {
+        "start_ts": 1766989644.504872,
+        "first_token_ts": 1766989644.828471,
+        "last_token_ts": 1766989664.5818315,
+        "prefill_s": 0.32359886169433594,
+        "decode_s": 19.753360509872437,
+        "total_s": 20.076959371566772
+      },
+      "tool": {
+        "start_ts": 1766989664.581916,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\"",
+        "end_ts": 1766989664.7503037,
+        "total_s": 0.16838765144348145,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 103,
+      "query": {
+        "start_ts": 1766989664.7529216,
+        "first_token_ts": 1766989665.0692565,
+        "last_token_ts": 1766989683.9249678,
+        "prefill_s": 0.31633496284484863,
+        "decode_s": 18.855711221694946,
+        "total_s": 19.172046184539795
+      },
+      "tool": {
+        "start_ts": 1766989683.9250286,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\"",
+        "end_ts": 1766989684.0880451,
+        "total_s": 0.16301655769348145,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 104,
+      "query": {
+        "start_ts": 1766989684.0898705,
+        "first_token_ts": 1766989684.482304,
+        "last_token_ts": 1766989703.8235233,
+        "prefill_s": 0.39243364334106445,
+        "decode_s": 19.341219186782837,
+        "total_s": 19.7336528301239
+      },
+      "tool": {
+        "start_ts": 1766989703.8235958,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\"",
+        "end_ts": 1766989703.9781153,
+        "total_s": 0.15451955795288086,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 105,
+      "query": {
+        "start_ts": 1766989703.9800825,
+        "first_token_ts": 1766989704.2341764,
+        "last_token_ts": 1766989724.1341054,
+        "prefill_s": 0.25409388542175293,
+        "decode_s": 19.89992904663086,
+        "total_s": 20.154022932052612
+      },
+      "tool": {
+        "start_ts": 1766989724.1341922,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\"",
+        "end_ts": 1766989724.287247,
+        "total_s": 0.15305471420288086,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 106,
+      "query": {
+        "start_ts": 1766989724.2891743,
+        "first_token_ts": 1766989724.5416348,
+        "last_token_ts": 1766989744.9539294,
+        "prefill_s": 0.2524604797363281,
+        "decode_s": 20.412294626235962,
+        "total_s": 20.66475510597229
+      },
+      "tool": {
+        "start_ts": 1766989744.9540048,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\"",
+        "end_ts": 1766989745.1069763,
+        "total_s": 0.15297150611877441,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 107,
+      "query": {
+        "start_ts": 1766989745.108944,
+        "first_token_ts": 1766989745.3880491,
+        "last_token_ts": 1766989766.478312,
+        "prefill_s": 0.27910518646240234,
+        "decode_s": 21.09026288986206,
+        "total_s": 21.369368076324463
+      },
+      "tool": {
+        "start_ts": 1766989766.4783854,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\"",
+        "end_ts": 1766989766.6307347,
+        "total_s": 0.15234923362731934,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 108,
+      "query": {
+        "start_ts": 1766989766.632653,
+        "first_token_ts": 1766989766.896395,
+        "last_token_ts": 1766989787.5908294,
+        "prefill_s": 0.26374197006225586,
+        "decode_s": 20.69443440437317,
+        "total_s": 20.958176374435425
+      },
+      "tool": {
+        "start_ts": 1766989787.590923,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\"",
+        "end_ts": 1766989787.770777,
+        "total_s": 0.1798539161682129,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 109,
+      "query": {
+        "start_ts": 1766989787.7726781,
+        "first_token_ts": 1766989788.0099266,
+        "last_token_ts": 1766989809.1454818,
+        "prefill_s": 0.23724842071533203,
+        "decode_s": 21.135555267333984,
+        "total_s": 21.372803688049316
+      },
+      "tool": {
+        "start_ts": 1766989809.1455557,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\"",
+        "end_ts": 1766989809.2944753,
+        "total_s": 0.14891958236694336,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 110,
+      "query": {
+        "start_ts": 1766989809.2964737,
+        "first_token_ts": 1766989809.5266173,
+        "last_token_ts": 1766989830.7472217,
+        "prefill_s": 0.23014354705810547,
+        "decode_s": 21.220604419708252,
+        "total_s": 21.450747966766357
+      },
+      "tool": {
+        "start_ts": 1766989830.7473257,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\"",
+        "end_ts": 1766989830.8981912,
+        "total_s": 0.1508655548095703,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 111,
+      "query": {
+        "start_ts": 1766989830.900121,
+        "first_token_ts": 1766989831.2651489,
+        "last_token_ts": 1766989853.3661013,
+        "prefill_s": 0.36502790451049805,
+        "decode_s": 22.10095238685608,
+        "total_s": 22.465980291366577
+      },
+      "tool": {
+        "start_ts": 1766989853.3661764,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\"",
+        "end_ts": 1766989853.522583,
+        "total_s": 0.15640664100646973,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 112,
+      "query": {
+        "start_ts": 1766989853.5247598,
+        "first_token_ts": 1766989853.791026,
+        "last_token_ts": 1766989881.424823,
+        "prefill_s": 0.2662663459777832,
+        "decode_s": 27.63379693031311,
+        "total_s": 27.900063276290894
+      },
+      "tool": {
+        "start_ts": 1766989881.4249072,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\"",
+        "end_ts": 1766989881.5744598,
+        "total_s": 0.149552583694458,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 113,
+      "query": {
+        "start_ts": 1766989881.576503,
+        "first_token_ts": 1766989883.3854723,
+        "last_token_ts": 1766989918.8091564,
+        "prefill_s": 1.808969259262085,
+        "decode_s": 35.42368412017822,
+        "total_s": 37.23265337944031
+      },
+      "tool": {
+        "start_ts": 1766989918.8092446,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\"",
+        "end_ts": 1766989918.9614854,
+        "total_s": 0.15224075317382812,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 114,
+      "query": {
+        "start_ts": 1766989918.963447,
+        "first_token_ts": 1766989919.243349,
+        "last_token_ts": 1766989944.3163404,
+        "prefill_s": 0.27990198135375977,
+        "decode_s": 25.072991371154785,
+        "total_s": 25.352893352508545
+      },
+      "tool": {
+        "start_ts": 1766989944.3164191,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\"",
+        "end_ts": 1766989944.46757,
+        "total_s": 0.15115094184875488,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 115,
+      "query": {
+        "start_ts": 1766989944.469499,
+        "first_token_ts": 1766989944.7382934,
+        "last_token_ts": 1766989969.5824537,
+        "prefill_s": 0.26879429817199707,
+        "decode_s": 24.844160318374634,
+        "total_s": 25.11295461654663
+      },
+      "tool": {
+        "start_ts": 1766989969.5825424,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\"",
+        "end_ts": 1766989969.7314937,
+        "total_s": 0.14895129203796387,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 116,
+      "query": {
+        "start_ts": 1766989969.7334063,
+        "first_token_ts": 1766989969.9823225,
+        "last_token_ts": 1766989996.2341554,
+        "prefill_s": 0.2489161491394043,
+        "decode_s": 26.251832962036133,
+        "total_s": 26.500749111175537
+      },
+      "tool": {
+        "start_ts": 1766989996.234236,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\"",
+        "end_ts": 1766989996.3808072,
+        "total_s": 0.14657115936279297,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 117,
+      "query": {
+        "start_ts": 1766989996.3827102,
+        "first_token_ts": 1766989996.6555893,
+        "last_token_ts": 1766990024.4348269,
+        "prefill_s": 0.27287912368774414,
+        "decode_s": 27.779237508773804,
+        "total_s": 28.052116632461548
+      },
+      "tool": {
+        "start_ts": 1766990024.4349198,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\"",
+        "end_ts": 1766990024.6029644,
+        "total_s": 0.1680445671081543,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 118,
+      "query": {
+        "start_ts": 1766990024.6049683,
+        "first_token_ts": 1766990024.9050953,
+        "last_token_ts": 1766990054.2213879,
+        "prefill_s": 0.3001270294189453,
+        "decode_s": 29.31629252433777,
+        "total_s": 29.616419553756714
+      },
+      "tool": {
+        "start_ts": 1766990054.2214732,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\"",
+        "end_ts": 1766990054.3788238,
+        "total_s": 0.1573505401611328,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 119,
+      "query": {
+        "start_ts": 1766990054.3807964,
+        "first_token_ts": 1766990054.6439455,
+        "last_token_ts": 1766990083.4751728,
+        "prefill_s": 0.2631490230560303,
+        "decode_s": 28.83122730255127,
+        "total_s": 29.0943763256073
+      },
+      "tool": {
+        "start_ts": 1766990083.4752717,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\"",
+        "end_ts": 1766990083.6338735,
+        "total_s": 0.1586017608642578,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 120,
+      "query": {
+        "start_ts": 1766990083.6366203,
+        "first_token_ts": 1766990084.0500789,
+        "last_token_ts": 1766990114.8816702,
+        "prefill_s": 0.41345858573913574,
+        "decode_s": 30.831591367721558,
+        "total_s": 31.245049953460693
+      },
+      "tool": {
+        "start_ts": 1766990114.8818026,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990115.04045,
+        "total_s": 0.1586475372314453,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 121,
+      "query": {
+        "start_ts": 1766990115.0423381,
+        "first_token_ts": 1766990115.2951977,
+        "last_token_ts": 1766990148.0272622,
+        "prefill_s": 0.25285959243774414,
+        "decode_s": 32.73206448554993,
+        "total_s": 32.98492407798767
+      },
+      "tool": {
+        "start_ts": 1766990148.0273569,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError\"",
+        "end_ts": 1766990148.189542,
+        "total_s": 0.1621851921081543,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 122,
+      "query": {
+        "start_ts": 1766990148.191382,
+        "first_token_ts": 1766990148.6041496,
+        "last_token_ts": 1766990184.887565,
+        "prefill_s": 0.4127676486968994,
+        "decode_s": 36.2834153175354,
+        "total_s": 36.6961829662323
+      },
+      "tool": {
+        "start_ts": 1766990184.8876698,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\"",
+        "end_ts": 1766990185.0429852,
+        "total_s": 0.15531539916992188,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 123,
+      "query": {
+        "start_ts": 1766990185.044967,
+        "first_token_ts": 1766990185.3509028,
+        "last_token_ts": 1766990220.94161,
+        "prefill_s": 0.3059358596801758,
+        "decode_s": 35.590707302093506,
+        "total_s": 35.89664316177368
+      },
+      "tool": {
+        "start_ts": 1766990220.941726,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990221.0930004,
+        "total_s": 0.1512744426727295,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 124,
+      "query": {
+        "start_ts": 1766990221.0949655,
+        "first_token_ts": 1766990221.4188967,
+        "last_token_ts": 1766990257.4462988,
+        "prefill_s": 0.3239312171936035,
+        "decode_s": 36.02740216255188,
+        "total_s": 36.35133337974548
+      },
+      "tool": {
+        "start_ts": 1766990257.4463956,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError\"",
+        "end_ts": 1766990257.593115,
+        "total_s": 0.14671945571899414,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 125,
+      "query": {
+        "start_ts": 1766990257.595084,
+        "first_token_ts": 1766990257.936364,
+        "last_token_ts": 1766990294.419229,
+        "prefill_s": 0.3412799835205078,
+        "decode_s": 36.48286509513855,
+        "total_s": 36.82414507865906
+      },
+      "tool": {
+        "start_ts": 1766990294.4193254,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\"",
+        "end_ts": 1766990294.5717115,
+        "total_s": 0.15238618850708008,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 126,
+      "query": {
+        "start_ts": 1766990294.574023,
+        "first_token_ts": 1766990294.8595505,
+        "last_token_ts": 1766990350.0779605,
+        "prefill_s": 0.28552746772766113,
+        "decode_s": 55.2184100151062,
+        "total_s": 55.50393748283386
+      },
+      "tool": {
+        "start_ts": 1766990350.078058,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990350.245152,
+        "total_s": 0.16709399223327637,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 127,
+      "query": {
+        "start_ts": 1766990350.247146,
+        "first_token_ts": 1766990352.9770222,
+        "last_token_ts": 1766990407.4492655,
+        "prefill_s": 2.7298762798309326,
+        "decode_s": 54.472243309020996,
+        "total_s": 57.20211958885193
+      },
+      "tool": {
+        "start_ts": 1766990407.4493947,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError\"",
+        "end_ts": 1766990407.598469,
+        "total_s": 0.14907431602478027,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 128,
+      "query": {
+        "start_ts": 1766990407.6006298,
+        "first_token_ts": 1766990407.9275618,
+        "last_token_ts": 1766990444.1877263,
+        "prefill_s": 0.3269319534301758,
+        "decode_s": 36.26016449928284,
+        "total_s": 36.58709645271301
+      },
+      "tool": {
+        "start_ts": 1766990444.1878366,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\"",
+        "end_ts": 1766990444.350753,
+        "total_s": 0.1629164218902588,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 129,
+      "query": {
+        "start_ts": 1766990444.3527136,
+        "first_token_ts": 1766990444.6713834,
+        "last_token_ts": 1766990480.9592915,
+        "prefill_s": 0.31866979598999023,
+        "decode_s": 36.28790807723999,
+        "total_s": 36.60657787322998
+      },
+      "tool": {
+        "start_ts": 1766990480.9593952,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990481.1110985,
+        "total_s": 0.1517033576965332,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 130,
+      "query": {
+        "start_ts": 1766990481.1135204,
+        "first_token_ts": 1766990481.5966809,
+        "last_token_ts": 1766990525.033336,
+        "prefill_s": 0.48316049575805664,
+        "decode_s": 43.436655044555664,
+        "total_s": 43.91981554031372
+      },
+      "tool": {
+        "start_ts": 1766990525.0335164,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990525.197984,
+        "total_s": 0.16446757316589355,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 131,
+      "query": {
+        "start_ts": 1766990525.199927,
+        "first_token_ts": 1766990525.688379,
+        "last_token_ts": 1766990564.4334474,
+        "prefill_s": 0.4884519577026367,
+        "decode_s": 38.745068311691284,
+        "total_s": 39.23352026939392
+      },
+      "tool": {
+        "start_ts": 1766990564.4335546,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990564.586098,
+        "total_s": 0.152543306350708,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 132,
+      "query": {
+        "start_ts": 1766990564.5881689,
+        "first_token_ts": 1766990564.885456,
+        "last_token_ts": 1766990605.2997835,
+        "prefill_s": 0.2972872257232666,
+        "decode_s": 40.41432738304138,
+        "total_s": 40.71161460876465
+      },
+      "tool": {
+        "start_ts": 1766990605.2998915,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990605.464707,
+        "total_s": 0.16481542587280273,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 133,
+      "query": {
+        "start_ts": 1766990605.466814,
+        "first_token_ts": 1766990605.837913,
+        "last_token_ts": 1766990646.1950862,
+        "prefill_s": 0.37109899520874023,
+        "decode_s": 40.357173204422,
+        "total_s": 40.72827219963074
+      },
+      "tool": {
+        "start_ts": 1766990646.1951888,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990646.3443596,
+        "total_s": 0.1491708755493164,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 134,
+      "query": {
+        "start_ts": 1766990646.3463264,
+        "first_token_ts": 1766990646.7053716,
+        "last_token_ts": 1766990681.6738133,
+        "prefill_s": 0.35904526710510254,
+        "decode_s": 34.96844172477722,
+        "total_s": 35.327486991882324
+      },
+      "tool": {
+        "start_ts": 1766990681.673922,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990681.8131297,
+        "total_s": 0.1392076015472412,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 135,
+      "query": {
+        "start_ts": 1766990681.8149972,
+        "first_token_ts": 1766990682.143038,
+        "last_token_ts": 1766990723.967099,
+        "prefill_s": 0.32804083824157715,
+        "decode_s": 41.824060916900635,
+        "total_s": 42.15210175514221
+      },
+      "tool": {
+        "start_ts": 1766990723.9672012,
+        "action": "grep -r \"import.*models\" tests/migrations/test_writer.py | grep -v \"from django.db import models\" | grep -v \"SET(42)\" | grep -v \"migrations.models\" | grep -v \"migrations, models\" | grep -v \"migrations.test_writer\" | grep -v \"models.CharField\" | grep -v \"TextEnum\" | grep -v \"TextTranslatedEnum\" | grep -v \"IntEnum\" | grep -v \"IntFlagEnum\" | grep -v \"Money\" | grep -v \"FoodManager\" | grep -v \"FoodQuerySet\" | grep -v \"TestModel1\" | grep -v \"DeconstructibleInstances\" | grep -v \"BinaryEnum\" | grep -v \"custom_migration_operations\" | grep -v \"datetime\" | grep -v \"timezone\" | grep -v \"connection\" | grep -v \"router\" | grep -v \"transaction\" | grep -v \"IntegrityError\" | grep -v \"DatabaseError\" | grep -v \"OperationalError\" | grep -v \"NotSupportedError\" | grep -v \"DEFAULT_DB_ALIAS\" | grep -v \"get_version\" | grep -v \"get_default_timezone\" | grep -v \"get_fixed_timezone\" | grep -v \"SettingsReference\" | grep -v \"SimpleTestCase\" | grep -v \"mock\" | grep -v \"now\" | grep -v \"zoneinfo\" | grep -v \"NoneType\" | grep -v \"uuid\" | grep -v \"decimal\" | grep -v \"enum\" | grep -v \"functools\" | grep -v \"math\" | grep -v \"pathlib\" | grep -v \"re\" | grep -v \"sys\" | grep -v \"time\" | grep -v \"os\" | grep -v \"import datetime\" | grep -v \"import time\" | grep -v \"from django.db import migrations, models\" | grep -v \"import migrations.models\" | grep -v \"import migrations.test_writer\" | grep -v \"from django.db import models\" | grep -v \"from django.db import migrations\" | grep -v \"from django.db import models, migrations\" | grep -v \"from django.db import migrations, models\" | grep -v \"from django.db import migrations, models, timezone\" | grep -v \"from django.db import migrations, models, timezone, connection\" | grep -v \"from django.db import migrations, models, timezone, connection, router\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\" | grep -v \"from django.db import migrations, models, timezone, connection, router, transaction, IntegrityError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError, OperationalError, NotSupportedError, DatabaseError\"",
+        "end_ts": 1766990724.1242723,
+        "total_s": 0.15707111358642578,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 136,
+      "query": {},
+      "tool": {}
+    }
+  ]
+}

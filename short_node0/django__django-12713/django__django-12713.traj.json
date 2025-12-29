@@ -1,0 +1,901 @@
+{
+  "info": {
+    "exit_status": "Submitted",
+    "submission": "diff --git a/complex_test.py b/complex_test.py\nnew file mode 100644\nindex 0000000000..6456656950\n--- /dev/null\n+++ b/complex_test.py\n@@ -0,0 +1,52 @@\n+import os\n+import django\n+from django import forms\n+from django.contrib import admin\n+from django.db import models\n+\n+# Configure Django settings\n+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\n+settings = {\n+    'INSTALLED_APPS': [\n+        'django.contrib.admin',\n+        'django.contrib.auth',\n+        'django.contrib.contenttypes',\n+        'django.contrib.sessions',\n+        'django.contrib.messages',\n+        'django.contrib.staticfiles',\n+    ],\n+    'SECRET_KEY': 'fake-key',\n+}\n+django.conf.settings.configure(**settings)\n+django.setup()\n+\n+class RelatedModel(models.Model):\n+    name = models.CharField(max_length=100)\n+    \n+    class Meta:\n+        app_label = 'test_app'\n+\n+class MyModel(models.Model):\n+    name = models.CharField(max_length=100)\n+    related_objects = models.ManyToManyField(RelatedModel, blank=True)\n+    \n+    class Meta:\n+        app_label = 'test_app'\n+\n+class MyAdmin(admin.ModelAdmin):\n+    # This will trigger the FilteredSelectMultiple widget in the parent class\n+    filter_horizontal = ('related_objects',)\n+    \n+    def formfield_for_manytomany(self, db_field, request, **kwargs):\n+        # But we want to use a custom widget instead\n+        kwargs['widget'] = forms.CheckboxSelectMultiple()\n+        return super().formfield_for_manytomany(db_field, request, **kwargs)\n+\n+# Create a simple test to verify the fix\n+admin_site = admin.AdminSite()\n+my_admin = MyAdmin(MyModel, admin_site)\n+\n+# Get the formfield for the manytomany field\n+formfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\n+print(f\"Widget type: {type(formfield.widget).__name__}\")\n+print(f\"Expected: CheckboxSelectMultiple\")\ndiff --git a/django/contrib/admin/options.py b/django/contrib/admin/options.py\nindex 69a5fbf389..c4a4b6eba3 100644\n--- a/django/contrib/admin/options.py\n+++ b/django/contrib/admin/options.py\n@@ -254,7 +254,7 @@ class BaseModelAdmin(metaclass=forms.MediaDefiningClass):\n             kwargs['widget'] = AutocompleteSelectMultiple(db_field.remote_field, self.admin_site, using=db)\n         elif db_field.name in self.raw_id_fields:\n             kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n-        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal]:\n+        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal] and \"widget\" not in kwargs:\n             kwargs['widget'] = widgets.FilteredSelectMultiple(\n                 db_field.verbose_name,\n                 db_field.name in self.filter_vertical\ndiff --git a/reproduce_issue.py b/reproduce_issue.py\nnew file mode 100644\nindex 0000000000..948b884e26\n--- /dev/null\n+++ b/reproduce_issue.py\n@@ -0,0 +1,48 @@\n+import os\n+import django\n+from django import forms\n+from django.contrib import admin\n+from django.db import models\n+\n+# Configure Django settings\n+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\n+settings = {\n+    'INSTALLED_APPS': [\n+        'django.contrib.admin',\n+        'django.contrib.auth',\n+        'django.contrib.contenttypes',\n+        'django.contrib.sessions',\n+        'django.contrib.messages',\n+        'django.contrib.staticfiles',\n+    ],\n+    'SECRET_KEY': 'fake-key',\n+}\n+django.conf.settings.configure(**settings)\n+django.setup()\n+\n+class MyModel(models.Model):\n+    name = models.CharField(max_length=100)\n+    related_objects = models.ManyToManyField('self', blank=True)\n+\n+    class Meta:\n+        # This is needed to avoid app registry issues\n+        app_label = 'test_app'\n+\n+class MyAdmin(admin.ModelAdmin):\n+    filter_horizontal = ('related_objects',)\n+    \n+    def formfield_for_manytomany(self, db_field, request, **kwargs):\n+        # Custom widget should be used but gets overridden\n+        print(f\"Before super(): kwargs['widget'] = {kwargs.get('widget', 'Not set')}\")\n+        kwargs['widget'] = forms.CheckboxSelectMultiple()\n+        print(f\"After setting widget: kwargs['widget'] = {kwargs.get('widget', 'Not set')}\")\n+        return super().formfield_for_manytomany(db_field, request, **kwargs)\n+\n+# Create a simple test to verify the issue\n+admin_site = admin.AdminSite()\n+my_admin = MyAdmin(MyModel, admin_site)\n+\n+# Get the formfield for the manytomany field\n+formfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\n+print(f\"Final widget type: {type(formfield.widget).__name__}\")\n+print(f\"Expected: CheckboxSelectMultiple\")\n",
+    "model_stats": {
+      "instance_cost": 0.0,
+      "api_calls": 23
+    },
+    "mini_version": "1.14.4",
+    "config": {
+      "agent": {
+        "system_template": "You are a helpful assistant that can interact multiple times with a computer shell to solve programming tasks.\nYour response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).\n\nInclude a THOUGHT section before your command where you explain your reasoning process.\nFormat your response as shown in <format_example>.\n\n<format_example>\nTHOUGHT: Your reasoning and analysis here\n\n```bash\nyour_command_here\n```\n</format_example>\n\nFailure to follow these rules will cause your response to be rejected.\n",
+        "instance_template": "<pr_description>\nConsider the following PR description:\n{{task}}\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n\nIMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.\n\nFor each response:\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide exactly ONE bash command to execute\n\n## Important Boundaries\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\nYou are operating in an environment where\n1. You write a single command\n2. The system executes that command in a subshell\n3. You see the result\n4. You write your next command\n\nEach response should include:\n1. A **THOUGHT** section where you explain your reasoning and plan\n2. A single bash code block with your command\n\nFormat your responses like this:\n\n<format_example>\nTHOUGHT: Here I explain my reasoning process, analysis of the current situation,\nand what I'm trying to accomplish with the command below.\n\n```bash\nyour_command_here\n```\n</format_example>\n\nCommands must be specified in a single bash code block:\n\n```bash\nyour_command_here\n```\n\n**CRITICAL REQUIREMENTS:**\n- Your response SHOULD include a THOUGHT section explaining your reasoning\n- Your response MUST include EXACTLY ONE bash code block\n- This bash block MUST contain EXACTLY ONE command (or a set of commands connected with && or ||)\n- If you include zero or multiple bash blocks, or no command at all, YOUR RESPONSE WILL FAIL\n- Do NOT try to run multiple independent commands in separate blocks in one response\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nTHOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```\n</example_response>\n\nExample of an INCORRECT response:\n<example_response>\nTHOUGHT: I need to examine the codebase and then look at a specific file. I'll run multiple commands to do this.\n\n```bash\nls -la\n```\n\nNow I'll read the file:\n\n```bash\ncat file.txt\n```\n</example_response>\n\nIf you need to run multiple commands, either:\n1. Combine them in one block using && or ||\n```bash\ncommand1 && command2 || echo \"Error occurred\"\n```\n\n2. Wait for the first command to complete, see its output, then issue the next command in your following response.\n\n## Environment Details\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- If a command isn't available, you can install it\n\n## Useful Command Examples\n\n### Create a new file:\n```bash\ncat <<'EOF' > newfile.py\nimport numpy as np\nhello = \"world\"\nprint(hello)\nEOF\n```\n\n### Edit files with sed:\n```bash\n# Replace all occurrences\nsed -i 's/old_string/new_string/g' filename.py\n\n# Replace only first occurrence\nsed -i 's/old_string/new_string/' filename.py\n\n# Replace first occurrence on line 1\nsed -i '1s/old_string/new_string/' filename.py\n\n# Replace all occurrences in lines 1-10\nsed -i '1,10s/old_string/new_string/g' filename.py\n```\n\n### View file content:\n```bash\n# View specific lines with numbers\nnl -ba filename.py | sed -n '10,20p'\n```\n\n### Any other command you want to run\n```bash\nanything\n```\n\n## Submission\nWhen you've completed your work (reading, editing, testing), and cannot make further progress\nissue exactly the following command:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```\n\nThis command will submit your work.\nYou cannot continue working (reading, editing, testing) in any way on this task after submitting.\n</instructions>\n",
+        "timeout_template": "The last command <command>{{action['action']}}</command> timed out and has been killed.\nThe output of the command was:\n <output>\n{{output}}\n</output>\nPlease try another command and make sure to avoid those requiring interactive input.",
+        "format_error_template": "Please always provide EXACTLY ONE action in triple backticks, found {{actions|length}} actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that).\n",
+        "action_observation_template": "<returncode>{{output.returncode}}</returncode>\n{% if output.output | length < 10000 -%}\n<output>\n{{ output.output -}}\n</output>\n{%- else -%}\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning>\n{%- set elided_chars = output.output | length - 10000 -%}\n<output_head>\n{{ output.output[:5000] }}\n</output_head>\n<elided_chars>\n{{ elided_chars }} characters elided\n</elided_chars>\n<output_tail>\n{{ output.output[-5000:] }}\n</output_tail>\n{%- endif -%}\n",
+        "step_limit": 135,
+        "cost_limit": 10.0,
+        "job_timeout": 0
+      },
+      "model": {
+        "model_name": "/mnt/shared/models/SWE-agent-LM-32B",
+        "base_url": "http://localhost:8301/v1",
+        "api_key": "EMPTY",
+        "model_kwargs": {
+          "drop_params": true,
+          "temperature": 0.0
+        },
+        "job_id": 62,
+        "step_limit": 135,
+        "stream": true,
+        "timeout": null,
+        "max_completion_tokens": 2048
+      },
+      "environment": {
+        "image": "docker.io/swebench/sweb.eval.x86_64.django_1776_django-12713:latest",
+        "cwd": "/testbed",
+        "env": {
+          "PAGER": "cat",
+          "MANPAGER": "cat",
+          "LESS": "-R",
+          "PIP_PROGRESS_BAR": "off",
+          "TQDM_DISABLE": "1"
+        },
+        "forward_env": [],
+        "timeout": 60,
+        "executable": "docker",
+        "run_args": [
+          "--rm"
+        ],
+        "container_timeout": "2h",
+        "pull_timeout": 600,
+        "throttle_sleep_max": 5.0,
+        "throttle_sleep_seed": 1234
+      },
+      "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+      "model_type": "minisweagent.models.vllm_model.VllmModel",
+      "environment_type": "minisweagent.environments.docker.DockerEnvironment"
+    }
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can interact multiple times with a computer shell to solve programming tasks.\nYour response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).\n\nInclude a THOUGHT section before your command where you explain your reasoning process.\nFormat your response as shown in <format_example>.\n\n<format_example>\nTHOUGHT: Your reasoning and analysis here\n\n```bash\nyour_command_here\n```\n</format_example>\n\nFailure to follow these rules will cause your response to be rejected."
+    },
+    {
+      "role": "user",
+      "content": "<pr_description>\nConsider the following PR description:\nAllow overridding widget in formfield_for_manytomany().\nDescription\n\t \n\t\t(last modified by Mariusz Felisiak)\n\t \nIt does not work when I set widget param to function formfield_for_manytomany().\nThis is different from the formfield_for_foreignkey() function.\n\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n\nIMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.\n\nFor each response:\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide exactly ONE bash command to execute\n\n## Important Boundaries\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\nYou are operating in an environment where\n1. You write a single command\n2. The system executes that command in a subshell\n3. You see the result\n4. You write your next command\n\nEach response should include:\n1. A **THOUGHT** section where you explain your reasoning and plan\n2. A single bash code block with your command\n\nFormat your responses like this:\n\n<format_example>\nTHOUGHT: Here I explain my reasoning process, analysis of the current situation,\nand what I'm trying to accomplish with the command below.\n\n```bash\nyour_command_here\n```\n</format_example>\n\nCommands must be specified in a single bash code block:\n\n```bash\nyour_command_here\n```\n\n**CRITICAL REQUIREMENTS:**\n- Your response SHOULD include a THOUGHT section explaining your reasoning\n- Your response MUST include EXACTLY ONE bash code block\n- This bash block MUST contain EXACTLY ONE command (or a set of commands connected with && or ||)\n- If you include zero or multiple bash blocks, or no command at all, YOUR RESPONSE WILL FAIL\n- Do NOT try to run multiple independent commands in separate blocks in one response\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nTHOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```\n</example_response>\n\nExample of an INCORRECT response:\n<example_response>\nTHOUGHT: I need to examine the codebase and then look at a specific file. I'll run multiple commands to do this.\n\n```bash\nls -la\n```\n\nNow I'll read the file:\n\n```bash\ncat file.txt\n```\n</example_response>\n\nIf you need to run multiple commands, either:\n1. Combine them in one block using && or ||\n```bash\ncommand1 && command2 || echo \"Error occurred\"\n```\n\n2. Wait for the first command to complete, see its output, then issue the next command in your following response.\n\n## Environment Details\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- If a command isn't available, you can install it\n\n## Useful Command Examples\n\n### Create a new file:\n```bash\ncat <<'EOF' > newfile.py\nimport numpy as np\nhello = \"world\"\nprint(hello)\nEOF\n```\n\n### Edit files with sed:\n```bash\n# Replace all occurrences\nsed -i 's/old_string/new_string/g' filename.py\n\n# Replace only first occurrence\nsed -i 's/old_string/new_string/' filename.py\n\n# Replace first occurrence on line 1\nsed -i '1s/old_string/new_string/' filename.py\n\n# Replace all occurrences in lines 1-10\nsed -i '1,10s/old_string/new_string/g' filename.py\n```\n\n### View file content:\n```bash\n# View specific lines with numbers\nnl -ba filename.py | sed -n '10,20p'\n```\n\n### Any other command you want to run\n```bash\nanything\n```\n\n## Submission\nWhen you've completed your work (reading, editing, testing), and cannot make further progress\nissue exactly the following command:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```\n\nThis command will submit your work.\nYou cannot continue working (reading, editing, testing) in any way on this task after submitting.\n</instructions>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-7577fc4d92e348a09e84767830e006fc",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988401,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\ntotal 176\ndrwxrwxrwx   1 root root  4096 Sep 10 10:43 .\ndrwxr-xr-x   1 root root  4096 Dec 29 06:06 ..\n-rw-r--r--   1 root root   782 Sep 10 10:36 .editorconfig\n-rw-r--r--   1 root root    86 Sep 10 10:36 .eslintignore\n-rw-r--r--   1 root root  1165 Sep 10 10:36 .eslintrc\ndrwxrwxrwx   8 root root  4096 Sep 10 10:43 .git\n-rw-r--r--   1 root root   297 Sep 10 10:36 .gitattributes\ndrwxrwxrwx   2 root root  4096 Sep 10 10:36 .github\n-rw-r--r--   1 root root   353 Sep 10 10:36 .gitignore\n-rw-r--r--   1 root root   164 Sep 10 10:36 .hgignore\ndrwxrwxrwx   2 root root  4096 Sep 10 10:36 .tx\n-rw-r--r--   1 root root 37473 Sep 10 10:36 AUTHORS\n-rw-r--r--   1 root root  1115 Sep 10 10:36 CONTRIBUTING.rst\ndrwxr-xr-x   2 root root  4096 Sep 10 10:43 Django.egg-info\n-rw-r--r--   1 root root   353 Sep 10 10:36 Gruntfile.js\n-rw-r--r--   1 root root   236 Sep 10 10:36 INSTALL\n-rw-r--r--   1 root root  1552 Sep 10 10:36 LICENSE\n-rw-r--r--   1 root root 13227 Sep 10 10:36 LICENSE.python\n-rw-r--r--   1 root root   307 Sep 10 10:36 MANIFEST.in\n-rw-r--r--   1 root root  1900 Sep 10 10:36 README.rst\ndrwxrwxrwx  19 root root  4096 Sep 10 10:43 django\ndrwxrwxrwx  13 root root  4096 Sep 10 10:36 docs\ndrwxrwxrwx   2 root root  4096 Sep 10 10:36 extras\ndrwxrwxrwx   4 root root  4096 Sep 10 10:36 js_tests\n-rw-r--r--   1 root root   369 Sep 10 10:36 package.json\ndrwxrwxrwx   2 root root  4096 Sep 10 10:36 scripts\n-rw-r--r--   1 root root  2121 Sep 10 10:36 setup.cfg\n-rw-r--r--   1 root root  2368 Sep 10 10:36 setup.py\ndrwxrwxrwx 212 root root 12288 Sep 10 10:36 tests\n-rw-r--r--   1 root root  1535 Sep 10 10:36 tox.ini\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now I need to find the relevant files that contain the `formfield_for_manytomany` function. Since the PR description mentions it's related to widget overriding, I should look for files in the django directory that might handle model admin functionality.\n\n```bash\nfind django -type f -name \"*.py\" | xargs grep -l \"formfield_for_manytomany\" | head -10\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-22192f94777e4335979e57be563af68b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988403,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\ndjango/contrib/auth/admin.py\ndjango/contrib/admin/options.py\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Great! I found two files that contain references to `formfield_for_manytomany`. Let's examine the `options.py` file first since it's likely to contain the base implementation of this function.\n\n```bash\ncat django/contrib/admin/options.py | grep -A 20 \"def formfield_for_manytomany\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-c40591a5a9a745b9b22e575be1013a9b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988407,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        \"\"\"\n        Get a form Field for a ManyToManyField.\n        \"\"\"\n        # If it uses an intermediary model that isn't auto created, don't show\n        # a field in admin.\n        if not db_field.remote_field.through._meta.auto_created:\n            return None\n        db = kwargs.get('using')\n\n        autocomplete_fields = self.get_autocomplete_fields(request)\n        if db_field.name in autocomplete_fields:\n            kwargs['widget'] = AutocompleteSelectMultiple(db_field.remote_field, self.admin_site, using=db)\n        elif db_field.name in self.raw_id_fields:\n            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal]:\n            kwargs['widget'] = widgets.FilteredSelectMultiple(\n                db_field.verbose_name,\n                db_field.name in self.filter_vertical\n            )\n\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me see more of the function to understand how it's implemented.\n\n```bash\ncat django/contrib/admin/options.py | grep -A 40 \"def formfield_for_manytomany\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-8aefe430d2984c08a95afd09976c1a84",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988410,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        \"\"\"\n        Get a form Field for a ManyToManyField.\n        \"\"\"\n        # If it uses an intermediary model that isn't auto created, don't show\n        # a field in admin.\n        if not db_field.remote_field.through._meta.auto_created:\n            return None\n        db = kwargs.get('using')\n\n        autocomplete_fields = self.get_autocomplete_fields(request)\n        if db_field.name in autocomplete_fields:\n            kwargs['widget'] = AutocompleteSelectMultiple(db_field.remote_field, self.admin_site, using=db)\n        elif db_field.name in self.raw_id_fields:\n            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal]:\n            kwargs['widget'] = widgets.FilteredSelectMultiple(\n                db_field.verbose_name,\n                db_field.name in self.filter_vertical\n            )\n\n        if 'queryset' not in kwargs:\n            queryset = self.get_field_queryset(db, db_field, request)\n            if queryset is not None:\n                kwargs['queryset'] = queryset\n\n        form_field = db_field.formfield(**kwargs)\n        if (isinstance(form_field.widget, SelectMultiple) and\n                not isinstance(form_field.widget, (CheckboxSelectMultiple, AutocompleteSelectMultiple))):\n            msg = _('Hold down \u201cControl\u201d, or \u201cCommand\u201d on a Mac, to select more than one.')\n            help_text = form_field.help_text\n            form_field.help_text = format_lazy('{} {}', help_text, msg) if help_text else msg\n        return form_field\n\n    def get_autocomplete_fields(self, request):\n        \"\"\"\n        Return a list of ForeignKey and/or ManyToMany fields which should use\n        an autocomplete widget.\n        \"\"\"\n        return self.autocomplete_fields\n\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now let's look at the `formfield_for_foreignkey` function to compare how it handles widget parameters.\n\n```bash\ncat django/contrib/admin/options.py | grep -A 20 \"def formfield_for_foreignkey\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-3a4087862de842dd8f022b4d21867ab3",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988412,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    def formfield_for_foreignkey(self, db_field, request, **kwargs):\n        \"\"\"\n        Get a form Field for a ForeignKey.\n        \"\"\"\n        db = kwargs.get('using')\n\n        if 'widget' not in kwargs:\n            if db_field.name in self.get_autocomplete_fields(request):\n                kwargs['widget'] = AutocompleteSelect(db_field.remote_field, self.admin_site, using=db)\n            elif db_field.name in self.raw_id_fields:\n                kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n            elif db_field.name in self.radio_fields:\n                kwargs['widget'] = widgets.AdminRadioSelect(attrs={\n                    'class': get_ul_class(self.radio_fields[db_field.name]),\n                })\n                kwargs['empty_label'] = _('None') if db_field.blank else None\n\n        if 'queryset' not in kwargs:\n            queryset = self.get_field_queryset(db, db_field, request)\n            if queryset is not None:\n                kwargs['queryset'] = queryset\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me see the rest of the `formfield_for_foreignkey` function.\n\n```bash\ncat django/contrib/admin/options.py | grep -A 40 \"def formfield_for_foreignkey\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-bf25d991430e4bdb80e710c242a9cd39",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988415,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    def formfield_for_foreignkey(self, db_field, request, **kwargs):\n        \"\"\"\n        Get a form Field for a ForeignKey.\n        \"\"\"\n        db = kwargs.get('using')\n\n        if 'widget' not in kwargs:\n            if db_field.name in self.get_autocomplete_fields(request):\n                kwargs['widget'] = AutocompleteSelect(db_field.remote_field, self.admin_site, using=db)\n            elif db_field.name in self.raw_id_fields:\n                kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n            elif db_field.name in self.radio_fields:\n                kwargs['widget'] = widgets.AdminRadioSelect(attrs={\n                    'class': get_ul_class(self.radio_fields[db_field.name]),\n                })\n                kwargs['empty_label'] = _('None') if db_field.blank else None\n\n        if 'queryset' not in kwargs:\n            queryset = self.get_field_queryset(db, db_field, request)\n            if queryset is not None:\n                kwargs['queryset'] = queryset\n\n        return db_field.formfield(**kwargs)\n\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        \"\"\"\n        Get a form Field for a ManyToManyField.\n        \"\"\"\n        # If it uses an intermediary model that isn't auto created, don't show\n        # a field in admin.\n        if not db_field.remote_field.through._meta.auto_created:\n            return None\n        db = kwargs.get('using')\n\n        autocomplete_fields = self.get_autocomplete_fields(request)\n        if db_field.name in autocomplete_fields:\n            kwargs['widget'] = AutocompleteSelectMultiple(db_field.remote_field, self.admin_site, using=db)\n        elif db_field.name in self.raw_id_fields:\n            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal]:\n            kwargs['widget'] = widgets.FilteredSelectMultiple(\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: After examining both functions, I can see that `formfield_for_foreignkey` checks if 'widget' is not in kwargs before setting it, while `formfield_for_manytomany` directly sets the widget without checking if it's already present in kwargs. This means that if a widget is passed as a parameter to `formfield_for_manytomany`, it will be overridden by the function.\n\nLet's create a script to reproduce the issue:\n\n```bash\ncat <<'EOF' > reproduce_issue.py\nfrom django import forms\nfrom django.contrib import admin\nfrom django.db import models\n\nclass MyModel(models.Model):\n    name = models.CharField(max_length=100)\n    related_objects = models.ManyToManyField('self', blank=True)\n\nclass MyAdmin(admin.ModelAdmin):\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        # Custom widget should be used but gets overridden\n        kwargs['widget'] = forms.CheckboxSelectMultiple()\n        return super().formfield_for_manytomany(db_field, request, **kwargs)\n\n# Create a simple test to verify the issue\nadmin_site = admin.AdminSite()\nmy_admin = MyAdmin(MyModel, admin_site)\n\n# Get the formfield for the manytomany field\nformfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\nprint(f\"Widget type: {type(formfield.widget).__name__}\")\nprint(f\"Expected: CheckboxSelectMultiple\")\nEOF\n```\n\nLet's run the script to confirm the issue:\n\n```bash\ncd /testbed && python reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-ef322ddebf5f401d84e190a603ab545d",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988417,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Please always provide EXACTLY ONE action in triple backticks, found 2 actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that)."
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: I need to run the commands separately. First, let's create the script:\n\n```bash\ncat <<'EOF' > reproduce_issue.py\nfrom django import forms\nfrom django.contrib import admin\nfrom django.db import models\n\nclass MyModel(models.Model):\n    name = models.CharField(max_length=100)\n    related_objects = models.ManyToManyField('self', blank=True)\n\nclass MyAdmin(admin.ModelAdmin):\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        # Custom widget should be used but gets overridden\n        kwargs['widget'] = forms.CheckboxSelectMultiple()\n        return super().formfield_for_manytomany(db_field, request, **kwargs)\n\n# Create a simple test to verify the issue\nadmin_site = admin.AdminSite()\nmy_admin = MyAdmin(MyModel, admin_site)\n\n# Get the formfield for the manytomany field\nformfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\nprint(f\"Widget type: {type(formfield.widget).__name__}\")\nprint(f\"Expected: CheckboxSelectMultiple\")\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-beaf0c4efba74da297414df5619c9555",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988431,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now let's run the script to confirm the issue:\n\n```bash\ncd /testbed && python reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-c693db59a9fb449bb46b016bd0009a7d",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988441,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\nTraceback (most recent call last):\n  File \"reproduce_issue.py\", line 5, in <module>\n    class MyModel(models.Model):\n  File \"/testbed/django/db/models/base.py\", line 108, in __new__\n    app_config = apps.get_containing_app_config(module)\n  File \"/testbed/django/apps/registry.py\", line 252, in get_containing_app_config\n    self.check_apps_ready()\n  File \"/testbed/django/apps/registry.py\", line 134, in check_apps_ready\n    settings.INSTALLED_APPS\n  File \"/testbed/django/conf/__init__.py\", line 77, in __getattr__\n    self._setup(name)\n  File \"/testbed/django/conf/__init__.py\", line 62, in _setup\n    % (desc, ENVIRONMENT_VARIABLE))\ndjango.core.exceptions.ImproperlyConfigured: Requested setting INSTALLED_APPS, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: We need to configure Django settings for our test script to work. Let's modify the script:\n\n```bash\ncat <<'EOF' > reproduce_issue.py\nimport os\nimport django\nfrom django import forms\nfrom django.contrib import admin\nfrom django.db import models\n\n# Configure Django settings\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\ndjango.setup()\n\nclass MyModel(models.Model):\n    name = models.CharField(max_length=100)\n    related_objects = models.ManyToManyField('self', blank=True)\n\n    class Meta:\n        # This is needed to avoid app registry issues\n        app_label = 'test_app'\n\nclass MyAdmin(admin.ModelAdmin):\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        # Custom widget should be used but gets overridden\n        kwargs['widget'] = forms.CheckboxSelectMultiple()\n        return super().formfield_for_manytomany(db_field, request, **kwargs)\n\n# Create a simple test to verify the issue\nadmin_site = admin.AdminSite()\nmy_admin = MyAdmin(MyModel, admin_site)\n\n# Get the formfield for the manytomany field\nformfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\nprint(f\"Widget type: {type(formfield.widget).__name__}\")\nprint(f\"Expected: CheckboxSelectMultiple\")\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-9dedd165f1764f38bed79338d4ef425e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988442,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's run the script again:\n\n```bash\ncd /testbed && python reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-d1049d72c1204796bedbe99bfe8a780a",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988455,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\nTraceback (most recent call last):\n  File \"reproduce_issue.py\", line 9, in <module>\n    django.setup()\n  File \"/testbed/django/__init__.py\", line 19, in setup\n    configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)\n  File \"/testbed/django/conf/__init__.py\", line 77, in __getattr__\n    self._setup(name)\n  File \"/testbed/django/conf/__init__.py\", line 64, in _setup\n    self._wrapped = Settings(settings_module)\n  File \"/testbed/django/conf/__init__.py\", line 190, in __init__\n    raise ImproperlyConfigured(\"The SECRET_KEY setting must not be empty.\")\ndjango.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: We need to add more settings to make Django work properly. Let's update our script:\n\n```bash\ncat <<'EOF' > reproduce_issue.py\nimport os\nimport django\nfrom django import forms\nfrom django.contrib import admin\nfrom django.db import models\n\n# Configure Django settings\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\nsettings = {\n    'INSTALLED_APPS': [\n        'django.contrib.admin',\n        'django.contrib.auth',\n        'django.contrib.contenttypes',\n        'django.contrib.sessions',\n        'django.contrib.messages',\n        'django.contrib.staticfiles',\n    ],\n    'SECRET_KEY': 'fake-key',\n}\ndjango.conf.settings.configure(**settings)\ndjango.setup()\n\nclass MyModel(models.Model):\n    name = models.CharField(max_length=100)\n    related_objects = models.ManyToManyField('self', blank=True)\n\n    class Meta:\n        # This is needed to avoid app registry issues\n        app_label = 'test_app'\n\nclass MyAdmin(admin.ModelAdmin):\n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        # Custom widget should be used but gets overridden\n        kwargs['widget'] = forms.CheckboxSelectMultiple()\n        return super().formfield_for_manytomany(db_field, request, **kwargs)\n\n# Create a simple test to verify the issue\nadmin_site = admin.AdminSite()\nmy_admin = MyAdmin(MyModel, admin_site)\n\n# Get the formfield for the manytomany field\nformfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\nprint(f\"Widget type: {type(formfield.widget).__name__}\")\nprint(f\"Expected: CheckboxSelectMultiple\")\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-025c4bb51d234620a891930ddc8dda4a",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988457,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's run the script again:\n\n```bash\ncd /testbed && python reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-14c4d8a894e54e6496ec67b4cc6db43b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988472,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nWidget type: CheckboxSelectMultiple\nExpected: CheckboxSelectMultiple\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: It seems our test script isn't showing the issue because we're not hitting any of the conditions in the `formfield_for_manytomany` function that would override our widget. Let's modify our script to include a field in `filter_horizontal` to trigger the widget override:\n\n```bash\ncat <<'EOF' > reproduce_issue.py\nimport os\nimport django\nfrom django import forms\nfrom django.contrib import admin\nfrom django.db import models\n\n# Configure Django settings\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\nsettings = {\n    'INSTALLED_APPS': [\n        'django.contrib.admin',\n        'django.contrib.auth',\n        'django.contrib.contenttypes',\n        'django.contrib.sessions',\n        'django.contrib.messages',\n        'django.contrib.staticfiles',\n    ],\n    'SECRET_KEY': 'fake-key',\n}\ndjango.conf.settings.configure(**settings)\ndjango.setup()\n\nclass MyModel(models.Model):\n    name = models.CharField(max_length=100)\n    related_objects = models.ManyToManyField('self', blank=True)\n\n    class Meta:\n        # This is needed to avoid app registry issues\n        app_label = 'test_app'\n\nclass MyAdmin(admin.ModelAdmin):\n    filter_horizontal = ('related_objects',)\n    \n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        # Custom widget should be used but gets overridden\n        print(f\"Before super(): kwargs['widget'] = {kwargs.get('widget', 'Not set')}\")\n        kwargs['widget'] = forms.CheckboxSelectMultiple()\n        print(f\"After setting widget: kwargs['widget'] = {kwargs.get('widget', 'Not set')}\")\n        return super().formfield_for_manytomany(db_field, request, **kwargs)\n\n# Create a simple test to verify the issue\nadmin_site = admin.AdminSite()\nmy_admin = MyAdmin(MyModel, admin_site)\n\n# Get the formfield for the manytomany field\nformfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\nprint(f\"Final widget type: {type(formfield.widget).__name__}\")\nprint(f\"Expected: CheckboxSelectMultiple\")\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-c8bfe03177da4e308443299a94e2c08e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988474,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's run the updated script:\n\n```bash\ncd /testbed && python reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-654c74a296be4e3aa47b8bfb454756c5",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988495,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nBefore super(): kwargs['widget'] = Not set\nAfter setting widget: kwargs['widget'] = <django.forms.widgets.CheckboxSelectMultiple object at 0x7af048642080>\nFinal widget type: FilteredSelectMultiple\nExpected: CheckboxSelectMultiple\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Perfect! Now we can see the issue. The `formfield_for_manytomany` function is overriding our custom widget with `FilteredSelectMultiple` because the field is in `filter_horizontal`.\n\nLet's fix the issue by modifying the `formfield_for_manytomany` function to check if 'widget' is already in kwargs before setting it, similar to how `formfield_for_foreignkey` does it:\n\n```bash\nsed -i 's/if db_field.name in \\[\\*self.filter_vertical, \\*self.filter_horizontal\\]:/if db_field.name in \\[\\*self.filter_vertical, \\*self.filter_horizontal\\] and \"widget\" not in kwargs:/' django/contrib/admin/options.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-45d74389086d40ef8786c93c56ee8e5e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988496,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now let's run our test script again to verify the fix:\n\n```bash\ncd /testbed && python reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-9d19f42e927e45ac9d6f79033c4b80ab",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988504,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nBefore super(): kwargs['widget'] = Not set\nAfter setting widget: kwargs['widget'] = <django.forms.widgets.CheckboxSelectMultiple object at 0x72df75cc1278>\nFinal widget type: CheckboxSelectMultiple\nExpected: CheckboxSelectMultiple\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "<format_example>\nTHOUGHT: Our fix worked! The custom widget is now being preserved. Let's also check if there are any other places in the codebase that might need similar fixes for consistency.\n\n```bash\ngrep -r \"kwargs\\['widget'\\] =\" django/contrib/admin/ | grep -v \"formfield_for_manytomany\" | head -10\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-897b168a9bd04dbda741fadb8a0ad940",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988506,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\ndjango/contrib/admin/options.py:                kwargs['widget'] = widgets.AdminRadioSelect(attrs={\ndjango/contrib/admin/options.py:                kwargs['widget'] = AutocompleteSelect(db_field.remote_field, self.admin_site, using=db)\ndjango/contrib/admin/options.py:                kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\ndjango/contrib/admin/options.py:                kwargs['widget'] = widgets.AdminRadioSelect(attrs={\ndjango/contrib/admin/options.py:            kwargs['widget'] = AutocompleteSelectMultiple(db_field.remote_field, self.admin_site, using=db)\ndjango/contrib/admin/options.py:            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\ndjango/contrib/admin/options.py:            kwargs['widget'] = widgets.FilteredSelectMultiple(\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's also check for other ManyToMany related functions that might have the same issue:\n\n```bash\ngrep -r \"formfield_for_\" django/contrib/admin/ | grep -v \"formfield_for_manytomany\" | head -10\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-ad17d274e936465a863aa6c2edfc1faf",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988510,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\ngrep: django/contrib/admin/__pycache__/options.cpython-36.pyc: binary file matches\ndjango/contrib/admin/options.py:    def formfield_for_dbfield(self, db_field, request, **kwargs):\ndjango/contrib/admin/options.py:            return self.formfield_for_choice_field(db_field, request, **kwargs)\ndjango/contrib/admin/options.py:                formfield = self.formfield_for_foreignkey(db_field, request, **kwargs)\ndjango/contrib/admin/options.py:        # passed to formfield_for_dbfield override the defaults.\ndjango/contrib/admin/options.py:    def formfield_for_choice_field(self, db_field, request, **kwargs):\ndjango/contrib/admin/options.py:    def formfield_for_foreignkey(self, db_field, request, **kwargs):\ndjango/contrib/admin/options.py:            'formfield_callback': partial(self.formfield_for_dbfield, request=request),\ndjango/contrib/admin/options.py:            'formfield_callback': partial(self.formfield_for_dbfield, request=request),\ndjango/contrib/admin/options.py:            'formfield_callback': partial(self.formfield_for_dbfield, request=request),\ndjango/contrib/admin/options.py:            'formfield_callback': partial(self.formfield_for_dbfield, request=request),\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's check the `formfield_for_manytomany` function in the auth admin to see if it has the same issue:\n\n```bash\ncat django/contrib/auth/admin.py | grep -A 20 \"def formfield_for_manytomany\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-b297c71b4e7549a7a871c42c042c0d99",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988513,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    def formfield_for_manytomany(self, db_field, request=None, **kwargs):\n        if db_field.name == 'permissions':\n            qs = kwargs.get('queryset', db_field.remote_field.model.objects)\n            # Avoid a major performance hit resolving permission names which\n            # triggers a content_type load:\n            kwargs['queryset'] = qs.select_related('content_type')\n        return super().formfield_for_manytomany(db_field, request=request, **kwargs)\n\n\n@admin.register(User)\nclass UserAdmin(admin.ModelAdmin):\n    add_form_template = 'admin/auth/user/add_form.html'\n    change_user_password_template = None\n    fieldsets = (\n        (None, {'fields': ('username', 'password')}),\n        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),\n        (_('Permissions'), {\n            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),\n        }),\n        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),\n    )\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "The auth admin's `formfield_for_manytomany` function doesn't seem to set a widget directly, so it shouldn't have the same issue.\n\nLet's verify our fix works in a more complex scenario by creating another test script:\n\n```bash\ncat <<'EOF' > complex_test.py\nimport os\nimport django\nfrom django import forms\nfrom django.contrib import admin\nfrom django.db import models\n\n# Configure Django settings\nos.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\nsettings = {\n    'INSTALLED_APPS': [\n        'django.contrib.admin',\n        'django.contrib.auth',\n        'django.contrib.contenttypes',\n        'django.contrib.sessions',\n        'django.contrib.messages',\n        'django.contrib.staticfiles',\n    ],\n    'SECRET_KEY': 'fake-key',\n}\ndjango.conf.settings.configure(**settings)\ndjango.setup()\n\nclass RelatedModel(models.Model):\n    name = models.CharField(max_length=100)\n    \n    class Meta:\n        app_label = 'test_app'\n\nclass MyModel(models.Model):\n    name = models.CharField(max_length=100)\n    related_objects = models.ManyToManyField(RelatedModel, blank=True)\n    \n    class Meta:\n        app_label = 'test_app'\n\nclass MyAdmin(admin.ModelAdmin):\n    # This will trigger the FilteredSelectMultiple widget in the parent class\n    filter_horizontal = ('related_objects',)\n    \n    def formfield_for_manytomany(self, db_field, request, **kwargs):\n        # But we want to use a custom widget instead\n        kwargs['widget'] = forms.CheckboxSelectMultiple()\n        return super().formfield_for_manytomany(db_field, request, **kwargs)\n\n# Create a simple test to verify the fix\nadmin_site = admin.AdminSite()\nmy_admin = MyAdmin(MyModel, admin_site)\n\n# Get the formfield for the manytomany field\nformfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\nprint(f\"Widget type: {type(formfield.widget).__name__}\")\nprint(f\"Expected: CheckboxSelectMultiple\")\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-ac96e7f5ddfd402297ec34766531801a",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988517,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's run the complex test:\n\n```bash\ncd /testbed && python complex_test.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-2451338e1a0246cb836a72933c8c8188",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988539,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nWidget type: CheckboxSelectMultiple\nExpected: CheckboxSelectMultiple\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "<format_example>\nTHOUGHT: Great! Our fix works for a more complex scenario too. Let's submit the fix:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-f092a02c27b34a03910e6b83a444e5b5",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988541,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "diff --git a/complex_test.py b/complex_test.py\nnew file mode 100644\nindex 0000000000..6456656950\n--- /dev/null\n+++ b/complex_test.py\n@@ -0,0 +1,52 @@\n+import os\n+import django\n+from django import forms\n+from django.contrib import admin\n+from django.db import models\n+\n+# Configure Django settings\n+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\n+settings = {\n+    'INSTALLED_APPS': [\n+        'django.contrib.admin',\n+        'django.contrib.auth',\n+        'django.contrib.contenttypes',\n+        'django.contrib.sessions',\n+        'django.contrib.messages',\n+        'django.contrib.staticfiles',\n+    ],\n+    'SECRET_KEY': 'fake-key',\n+}\n+django.conf.settings.configure(**settings)\n+django.setup()\n+\n+class RelatedModel(models.Model):\n+    name = models.CharField(max_length=100)\n+    \n+    class Meta:\n+        app_label = 'test_app'\n+\n+class MyModel(models.Model):\n+    name = models.CharField(max_length=100)\n+    related_objects = models.ManyToManyField(RelatedModel, blank=True)\n+    \n+    class Meta:\n+        app_label = 'test_app'\n+\n+class MyAdmin(admin.ModelAdmin):\n+    # This will trigger the FilteredSelectMultiple widget in the parent class\n+    filter_horizontal = ('related_objects',)\n+    \n+    def formfield_for_manytomany(self, db_field, request, **kwargs):\n+        # But we want to use a custom widget instead\n+        kwargs['widget'] = forms.CheckboxSelectMultiple()\n+        return super().formfield_for_manytomany(db_field, request, **kwargs)\n+\n+# Create a simple test to verify the fix\n+admin_site = admin.AdminSite()\n+my_admin = MyAdmin(MyModel, admin_site)\n+\n+# Get the formfield for the manytomany field\n+formfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\n+print(f\"Widget type: {type(formfield.widget).__name__}\")\n+print(f\"Expected: CheckboxSelectMultiple\")\ndiff --git a/django/contrib/admin/options.py b/django/contrib/admin/options.py\nindex 69a5fbf389..c4a4b6eba3 100644\n--- a/django/contrib/admin/options.py\n+++ b/django/contrib/admin/options.py\n@@ -254,7 +254,7 @@ class BaseModelAdmin(metaclass=forms.MediaDefiningClass):\n             kwargs['widget'] = AutocompleteSelectMultiple(db_field.remote_field, self.admin_site, using=db)\n         elif db_field.name in self.raw_id_fields:\n             kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.remote_field, self.admin_site, using=db)\n-        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal]:\n+        elif db_field.name in [*self.filter_vertical, *self.filter_horizontal] and \"widget\" not in kwargs:\n             kwargs['widget'] = widgets.FilteredSelectMultiple(\n                 db_field.verbose_name,\n                 db_field.name in self.filter_vertical\ndiff --git a/reproduce_issue.py b/reproduce_issue.py\nnew file mode 100644\nindex 0000000000..948b884e26\n--- /dev/null\n+++ b/reproduce_issue.py\n@@ -0,0 +1,48 @@\n+import os\n+import django\n+from django import forms\n+from django.contrib import admin\n+from django.db import models\n+\n+# Configure Django settings\n+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django.conf.global_settings')\n+settings = {\n+    'INSTALLED_APPS': [\n+        'django.contrib.admin',\n+        'django.contrib.auth',\n+        'django.contrib.contenttypes',\n+        'django.contrib.sessions',\n+        'django.contrib.messages',\n+        'django.contrib.staticfiles',\n+    ],\n+    'SECRET_KEY': 'fake-key',\n+}\n+django.conf.settings.configure(**settings)\n+django.setup()\n+\n+class MyModel(models.Model):\n+    name = models.CharField(max_length=100)\n+    related_objects = models.ManyToManyField('self', blank=True)\n+\n+    class Meta:\n+        # This is needed to avoid app registry issues\n+        app_label = 'test_app'\n+\n+class MyAdmin(admin.ModelAdmin):\n+    filter_horizontal = ('related_objects',)\n+    \n+    def formfield_for_manytomany(self, db_field, request, **kwargs):\n+        # Custom widget should be used but gets overridden\n+        print(f\"Before super(): kwargs['widget'] = {kwargs.get('widget', 'Not set')}\")\n+        kwargs['widget'] = forms.CheckboxSelectMultiple()\n+        print(f\"After setting widget: kwargs['widget'] = {kwargs.get('widget', 'Not set')}\")\n+        return super().formfield_for_manytomany(db_field, request, **kwargs)\n+\n+# Create a simple test to verify the issue\n+admin_site = admin.AdminSite()\n+my_admin = MyAdmin(MyModel, admin_site)\n+\n+# Get the formfield for the manytomany field\n+formfield = my_admin.formfield_for_manytomany(MyModel._meta.get_field('related_objects'), None)\n+print(f\"Final widget type: {type(formfield.widget).__name__}\")\n+print(f\"Expected: CheckboxSelectMultiple\")\n"
+    }
+  ],
+  "trajectory_format": "mini-swe-agent-1",
+  "instance_id": "django__django-12713"
+}

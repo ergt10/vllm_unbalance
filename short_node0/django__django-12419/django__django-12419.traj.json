@@ -1,0 +1,937 @@
+{
+  "info": {
+    "exit_status": "Submitted",
+    "submission": "diff --git a/django/conf/global_settings.py b/django/conf/global_settings.py\nindex 09c9b95d26..5e30e02773 100644\n--- a/django/conf/global_settings.py\n+++ b/django/conf/global_settings.py\n@@ -637,6 +637,6 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = False\n SECURE_HSTS_PRELOAD = False\n SECURE_HSTS_SECONDS = 0\n SECURE_REDIRECT_EXEMPT = []\n-SECURE_REFERRER_POLICY = None\n+SECURE_REFERRER_POLICY = \"same-origin\"\n SECURE_SSL_HOST = None\n SECURE_SSL_REDIRECT = False\ndiff --git a/test_referrer_policy.py b/test_referrer_policy.py\nnew file mode 100644\nindex 0000000000..24aae1a49f\n--- /dev/null\n+++ b/test_referrer_policy.py\n@@ -0,0 +1,24 @@\n+import os\n+import django\n+from django.conf import settings\n+from django.middleware.security import SecurityMiddleware\n+from django.http import HttpRequest, HttpResponse\n+\n+# Configure minimal Django settings\n+if not settings.configured:\n+    settings.configure(\n+        SECRET_KEY=\"fake-key\",\n+    )\n+    django.setup()\n+\n+# Create a mock request and response\n+request = HttpRequest()\n+response = HttpResponse()\n+\n+# Initialize the middleware with our settings\n+middleware = SecurityMiddleware()\n+response = middleware.process_response(request, response)\n+\n+# Check if the Referrer-Policy header is set correctly\n+print(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\n+print(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\ndiff --git a/test_referrer_policy_comprehensive.py b/test_referrer_policy_comprehensive.py\nnew file mode 100644\nindex 0000000000..7fc75c91cd\n--- /dev/null\n+++ b/test_referrer_policy_comprehensive.py\n@@ -0,0 +1,62 @@\n+import os\n+import django\n+from django.conf import settings\n+from django.middleware.security import SecurityMiddleware\n+from django.http import HttpRequest, HttpResponse\n+from django.test.utils import override_settings\n+\n+# Configure minimal Django settings\n+if not settings.configured:\n+    settings.configure(\n+        SECRET_KEY=\"fake-key\",\n+    )\n+    django.setup()\n+\n+def test_with_default_settings():\n+    \"\"\"Test with default settings (should use our new default of 'same-origin')\"\"\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    middleware = SecurityMiddleware()\n+    response = middleware.process_response(request, response)\n+    print(\"Default settings - Referrer-Policy header:\", response.get('Referrer-Policy'))\n+    assert response.get('Referrer-Policy') == \"same-origin\"\n+\n+def test_with_explicit_none():\n+    \"\"\"Test with SECURE_REFERRER_POLICY explicitly set to None (should not add header)\"\"\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    with override_settings(SECURE_REFERRER_POLICY=None):\n+        middleware = SecurityMiddleware()\n+        response = middleware.process_response(request, response)\n+        print(\"None setting - Referrer-Policy header present:\", 'Referrer-Policy' in response)\n+        assert 'Referrer-Policy' not in response\n+\n+def test_with_custom_value():\n+    \"\"\"Test with a custom SECURE_REFERRER_POLICY value (should use that value)\"\"\"\n+    custom_value = \"strict-origin\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    with override_settings(SECURE_REFERRER_POLICY=custom_value):\n+        middleware = SecurityMiddleware()\n+        response = middleware.process_response(request, response)\n+        print(f\"Custom value '{custom_value}' - Referrer-Policy header:\", response.get('Referrer-Policy'))\n+        assert response.get('Referrer-Policy') == custom_value\n+\n+def test_with_multiple_values():\n+    \"\"\"Test with multiple SECURE_REFERRER_POLICY values (should join them with commas)\"\"\"\n+    multiple_values = [\"strict-origin\", \"origin\"]\n+    expected_value = \"strict-origin,origin\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    with override_settings(SECURE_REFERRER_POLICY=multiple_values):\n+        middleware = SecurityMiddleware()\n+        response = middleware.process_response(request, response)\n+        print(f\"Multiple values {multiple_values} - Referrer-Policy header:\", response.get('Referrer-Policy'))\n+        assert response.get('Referrer-Policy') == expected_value\n+\n+if __name__ == \"__main__\":\n+    test_with_default_settings()\n+    test_with_explicit_none()\n+    test_with_custom_value()\n+    test_with_multiple_values()\n+    print(\"All tests passed!\")\n",
+    "model_stats": {
+      "instance_cost": 0.0,
+      "api_calls": 24
+    },
+    "mini_version": "1.14.4",
+    "config": {
+      "agent": {
+        "system_template": "You are a helpful assistant that can interact multiple times with a computer shell to solve programming tasks.\nYour response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).\n\nInclude a THOUGHT section before your command where you explain your reasoning process.\nFormat your response as shown in <format_example>.\n\n<format_example>\nTHOUGHT: Your reasoning and analysis here\n\n```bash\nyour_command_here\n```\n</format_example>\n\nFailure to follow these rules will cause your response to be rejected.\n",
+        "instance_template": "<pr_description>\nConsider the following PR description:\n{{task}}\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n\nIMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.\n\nFor each response:\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide exactly ONE bash command to execute\n\n## Important Boundaries\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\nYou are operating in an environment where\n1. You write a single command\n2. The system executes that command in a subshell\n3. You see the result\n4. You write your next command\n\nEach response should include:\n1. A **THOUGHT** section where you explain your reasoning and plan\n2. A single bash code block with your command\n\nFormat your responses like this:\n\n<format_example>\nTHOUGHT: Here I explain my reasoning process, analysis of the current situation,\nand what I'm trying to accomplish with the command below.\n\n```bash\nyour_command_here\n```\n</format_example>\n\nCommands must be specified in a single bash code block:\n\n```bash\nyour_command_here\n```\n\n**CRITICAL REQUIREMENTS:**\n- Your response SHOULD include a THOUGHT section explaining your reasoning\n- Your response MUST include EXACTLY ONE bash code block\n- This bash block MUST contain EXACTLY ONE command (or a set of commands connected with && or ||)\n- If you include zero or multiple bash blocks, or no command at all, YOUR RESPONSE WILL FAIL\n- Do NOT try to run multiple independent commands in separate blocks in one response\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nTHOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```\n</example_response>\n\nExample of an INCORRECT response:\n<example_response>\nTHOUGHT: I need to examine the codebase and then look at a specific file. I'll run multiple commands to do this.\n\n```bash\nls -la\n```\n\nNow I'll read the file:\n\n```bash\ncat file.txt\n```\n</example_response>\n\nIf you need to run multiple commands, either:\n1. Combine them in one block using && or ||\n```bash\ncommand1 && command2 || echo \"Error occurred\"\n```\n\n2. Wait for the first command to complete, see its output, then issue the next command in your following response.\n\n## Environment Details\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- If a command isn't available, you can install it\n\n## Useful Command Examples\n\n### Create a new file:\n```bash\ncat <<'EOF' > newfile.py\nimport numpy as np\nhello = \"world\"\nprint(hello)\nEOF\n```\n\n### Edit files with sed:\n```bash\n# Replace all occurrences\nsed -i 's/old_string/new_string/g' filename.py\n\n# Replace only first occurrence\nsed -i 's/old_string/new_string/' filename.py\n\n# Replace first occurrence on line 1\nsed -i '1s/old_string/new_string/' filename.py\n\n# Replace all occurrences in lines 1-10\nsed -i '1,10s/old_string/new_string/g' filename.py\n```\n\n### View file content:\n```bash\n# View specific lines with numbers\nnl -ba filename.py | sed -n '10,20p'\n```\n\n### Any other command you want to run\n```bash\nanything\n```\n\n## Submission\nWhen you've completed your work (reading, editing, testing), and cannot make further progress\nissue exactly the following command:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```\n\nThis command will submit your work.\nYou cannot continue working (reading, editing, testing) in any way on this task after submitting.\n</instructions>\n",
+        "timeout_template": "The last command <command>{{action['action']}}</command> timed out and has been killed.\nThe output of the command was:\n <output>\n{{output}}\n</output>\nPlease try another command and make sure to avoid those requiring interactive input.",
+        "format_error_template": "Please always provide EXACTLY ONE action in triple backticks, found {{actions|length}} actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that).\n",
+        "action_observation_template": "<returncode>{{output.returncode}}</returncode>\n{% if output.output | length < 10000 -%}\n<output>\n{{ output.output -}}\n</output>\n{%- else -%}\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning>\n{%- set elided_chars = output.output | length - 10000 -%}\n<output_head>\n{{ output.output[:5000] }}\n</output_head>\n<elided_chars>\n{{ elided_chars }} characters elided\n</elided_chars>\n<output_tail>\n{{ output.output[-5000:] }}\n</output_tail>\n{%- endif -%}\n",
+        "step_limit": 135,
+        "cost_limit": 10.0,
+        "job_timeout": 0
+      },
+      "model": {
+        "model_name": "/mnt/shared/models/SWE-agent-LM-32B",
+        "base_url": "http://localhost:8301/v1",
+        "api_key": "EMPTY",
+        "model_kwargs": {
+          "drop_params": true,
+          "temperature": 0.0
+        },
+        "job_id": 29,
+        "step_limit": 135,
+        "stream": true,
+        "timeout": null,
+        "max_completion_tokens": 2048
+      },
+      "environment": {
+        "image": "docker.io/swebench/sweb.eval.x86_64.django_1776_django-12419:latest",
+        "cwd": "/testbed",
+        "env": {
+          "PAGER": "cat",
+          "MANPAGER": "cat",
+          "LESS": "-R",
+          "PIP_PROGRESS_BAR": "off",
+          "TQDM_DISABLE": "1"
+        },
+        "forward_env": [],
+        "timeout": 60,
+        "executable": "docker",
+        "run_args": [
+          "--rm"
+        ],
+        "container_timeout": "2h",
+        "pull_timeout": 600,
+        "throttle_sleep_max": 5.0,
+        "throttle_sleep_seed": 1234
+      },
+      "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+      "model_type": "minisweagent.models.vllm_model.VllmModel",
+      "environment_type": "minisweagent.environments.docker.DockerEnvironment"
+    }
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can interact multiple times with a computer shell to solve programming tasks.\nYour response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).\n\nInclude a THOUGHT section before your command where you explain your reasoning process.\nFormat your response as shown in <format_example>.\n\n<format_example>\nTHOUGHT: Your reasoning and analysis here\n\n```bash\nyour_command_here\n```\n</format_example>\n\nFailure to follow these rules will cause your response to be rejected."
+    },
+    {
+      "role": "user",
+      "content": "<pr_description>\nConsider the following PR description:\nAdd secure default SECURE_REFERRER_POLICY / Referrer-policy header\nDescription\n\t\n#29406 added the ability for the SECURE_REFERRER_POLICY setting to set Referrer-Policy, released in Django 3.0.\nI propose we change the default for this to \"same-origin\" to make Django applications leak less information to third party sites.\nThe main risk of breakage here would be linked websites breaking, if they depend on verification through the Referer header. This is a pretty fragile technique since it can be spoofed.\nDocumentation: \u200bhttps://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy\nThe MDN support grid is out of date: \u200bhttps://caniuse.com/#search=Referrer-Policy\n\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n\nIMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.\n\nFor each response:\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide exactly ONE bash command to execute\n\n## Important Boundaries\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\nYou are operating in an environment where\n1. You write a single command\n2. The system executes that command in a subshell\n3. You see the result\n4. You write your next command\n\nEach response should include:\n1. A **THOUGHT** section where you explain your reasoning and plan\n2. A single bash code block with your command\n\nFormat your responses like this:\n\n<format_example>\nTHOUGHT: Here I explain my reasoning process, analysis of the current situation,\nand what I'm trying to accomplish with the command below.\n\n```bash\nyour_command_here\n```\n</format_example>\n\nCommands must be specified in a single bash code block:\n\n```bash\nyour_command_here\n```\n\n**CRITICAL REQUIREMENTS:**\n- Your response SHOULD include a THOUGHT section explaining your reasoning\n- Your response MUST include EXACTLY ONE bash code block\n- This bash block MUST contain EXACTLY ONE command (or a set of commands connected with && or ||)\n- If you include zero or multiple bash blocks, or no command at all, YOUR RESPONSE WILL FAIL\n- Do NOT try to run multiple independent commands in separate blocks in one response\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nTHOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```\n</example_response>\n\nExample of an INCORRECT response:\n<example_response>\nTHOUGHT: I need to examine the codebase and then look at a specific file. I'll run multiple commands to do this.\n\n```bash\nls -la\n```\n\nNow I'll read the file:\n\n```bash\ncat file.txt\n```\n</example_response>\n\nIf you need to run multiple commands, either:\n1. Combine them in one block using && or ||\n```bash\ncommand1 && command2 || echo \"Error occurred\"\n```\n\n2. Wait for the first command to complete, see its output, then issue the next command in your following response.\n\n## Environment Details\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- If a command isn't available, you can install it\n\n## Useful Command Examples\n\n### Create a new file:\n```bash\ncat <<'EOF' > newfile.py\nimport numpy as np\nhello = \"world\"\nprint(hello)\nEOF\n```\n\n### Edit files with sed:\n```bash\n# Replace all occurrences\nsed -i 's/old_string/new_string/g' filename.py\n\n# Replace only first occurrence\nsed -i 's/old_string/new_string/' filename.py\n\n# Replace first occurrence on line 1\nsed -i '1s/old_string/new_string/' filename.py\n\n# Replace all occurrences in lines 1-10\nsed -i '1,10s/old_string/new_string/g' filename.py\n```\n\n### View file content:\n```bash\n# View specific lines with numbers\nnl -ba filename.py | sed -n '10,20p'\n```\n\n### Any other command you want to run\n```bash\nanything\n```\n\n## Submission\nWhen you've completed your work (reading, editing, testing), and cannot make further progress\nissue exactly the following command:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```\n\nThis command will submit your work.\nYou cannot continue working (reading, editing, testing) in any way on this task after submitting.\n</instructions>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: First, let's explore the codebase to find where the SECURE_REFERRER_POLICY setting is defined and used.\n\n```bash\ncd /testbed && grep -r \"SECURE_REFERRER_POLICY\" --include=\"*.py\" .\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-58f2d4bdf0ea46ab9a6041e2a27b3bf6",
+          "choices": [
+            {
+              "delta": {
+                "content": "```",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988380,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n./tests/middleware/test_security.py:    @override_settings(SECURE_REFERRER_POLICY=None)\n./tests/middleware/test_security.py:        With SECURE_REFERRER_POLICY set to None, the middleware does not add a\n./tests/middleware/test_security.py:        With SECURE_REFERRER_POLICY set to a valid value, the middleware adds a\n./tests/middleware/test_security.py:            with self.subTest(value=value), override_settings(SECURE_REFERRER_POLICY=value):\n./tests/middleware/test_security.py:    @override_settings(SECURE_REFERRER_POLICY='strict-origin')\n./tests/check_framework/test_security.py:        SECURE_REFERRER_POLICY=None,\n./tests/check_framework/test_security.py:    @override_settings(MIDDLEWARE=[], SECURE_REFERRER_POLICY=None)\n./tests/check_framework/test_security.py:        Don't warn if SECURE_REFERRER_POLICY is None and SecurityMiddleware\n./tests/check_framework/test_security.py:            with self.subTest(value=value), override_settings(SECURE_REFERRER_POLICY=value):\n./tests/check_framework/test_security.py:        SECURE_REFERRER_POLICY='invalid-value',\n./django/core/checks/security/base.py:    \"SECURE_REFERRER_POLICY, and SECURE_SSL_REDIRECT settings will have no \"\n./django/core/checks/security/base.py:    'You have not set the SECURE_REFERRER_POLICY setting. Without this, your '\n./django/core/checks/security/base.py:    'You have set the SECURE_REFERRER_POLICY setting to an invalid value.',\n./django/core/checks/security/base.py:        if settings.SECURE_REFERRER_POLICY is None:\n./django/core/checks/security/base.py:        if isinstance(settings.SECURE_REFERRER_POLICY, str):\n./django/core/checks/security/base.py:            values = {v.strip() for v in settings.SECURE_REFERRER_POLICY.split(',')}\n./django/core/checks/security/base.py:            values = set(settings.SECURE_REFERRER_POLICY)\n./django/conf/global_settings.py:SECURE_REFERRER_POLICY = None\n./django/middleware/security.py:        self.referrer_policy = settings.SECURE_REFERRER_POLICY\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now I need to understand how the SECURE_REFERRER_POLICY is used in the codebase. Let's look at the security middleware implementation:\n\n```bash\ncd /testbed && cat django/middleware/security.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-62fdf9c782324eee8213872d77b5816b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988382,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nimport re\n\nfrom django.conf import settings\nfrom django.http import HttpResponsePermanentRedirect\nfrom django.utils.deprecation import MiddlewareMixin\n\n\nclass SecurityMiddleware(MiddlewareMixin):\n    def __init__(self, get_response=None):\n        self.sts_seconds = settings.SECURE_HSTS_SECONDS\n        self.sts_include_subdomains = settings.SECURE_HSTS_INCLUDE_SUBDOMAINS\n        self.sts_preload = settings.SECURE_HSTS_PRELOAD\n        self.content_type_nosniff = settings.SECURE_CONTENT_TYPE_NOSNIFF\n        self.xss_filter = settings.SECURE_BROWSER_XSS_FILTER\n        self.redirect = settings.SECURE_SSL_REDIRECT\n        self.redirect_host = settings.SECURE_SSL_HOST\n        self.redirect_exempt = [re.compile(r) for r in settings.SECURE_REDIRECT_EXEMPT]\n        self.referrer_policy = settings.SECURE_REFERRER_POLICY\n        self.get_response = get_response\n\n    def process_request(self, request):\n        path = request.path.lstrip(\"/\")\n        if (self.redirect and not request.is_secure() and\n                not any(pattern.search(path)\n                        for pattern in self.redirect_exempt)):\n            host = self.redirect_host or request.get_host()\n            return HttpResponsePermanentRedirect(\n                \"https://%s%s\" % (host, request.get_full_path())\n            )\n\n    def process_response(self, request, response):\n        if (self.sts_seconds and request.is_secure() and\n                'Strict-Transport-Security' not in response):\n            sts_header = \"max-age=%s\" % self.sts_seconds\n            if self.sts_include_subdomains:\n                sts_header = sts_header + \"; includeSubDomains\"\n            if self.sts_preload:\n                sts_header = sts_header + \"; preload\"\n            response['Strict-Transport-Security'] = sts_header\n\n        if self.content_type_nosniff:\n            response.setdefault('X-Content-Type-Options', 'nosniff')\n\n        if self.xss_filter:\n            response.setdefault('X-XSS-Protection', '1; mode=block')\n\n        if self.referrer_policy:\n            # Support a comma-separated string or iterable of values to allow\n            # fallback.\n            response.setdefault('Referrer-Policy', ','.join(\n                [v.strip() for v in self.referrer_policy.split(',')]\n                if isinstance(self.referrer_policy, str) else self.referrer_policy\n            ))\n\n        return response\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's also check the global settings file to see the current default value:\n\n```bash\ncd /testbed && cat django/conf/global_settings.py | grep SECURE_REFERRER_POLICY\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-553fbce7b7eb4b3a9f009800ef595bb2",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988383,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nSECURE_REFERRER_POLICY = None\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's also check the security checks to understand the validation:\n\n```bash\ncd /testbed && cat django/core/checks/security/base.py | grep -A 20 SECURE_REFERRER_POLICY\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-1921740af7e442e9abdd279ac95b00b3",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988385,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    \"SECURE_REFERRER_POLICY, and SECURE_SSL_REDIRECT settings will have no \"\n    \"effect.\",\n    id='security.W001',\n)\n\nW002 = Warning(\n    \"You do not have \"\n    \"'django.middleware.clickjacking.XFrameOptionsMiddleware' in your \"\n    \"MIDDLEWARE, so your pages will not be served with an \"\n    \"'x-frame-options' header. Unless there is a good reason for your \"\n    \"site to be served in a frame, you should consider enabling this \"\n    \"header to help prevent clickjacking attacks.\",\n    id='security.W002',\n)\n\nW004 = Warning(\n    \"You have not set a value for the SECURE_HSTS_SECONDS setting. \"\n    \"If your entire site is served only over SSL, you may want to consider \"\n    \"setting a value and enabling HTTP Strict Transport Security. \"\n    \"Be sure to read the documentation first; enabling HSTS carelessly \"\n    \"can cause serious, irreversible problems.\",\n--\n    'You have not set the SECURE_REFERRER_POLICY setting. Without this, your '\n    'site will not send a Referrer-Policy header. You should consider '\n    'enabling this header to protect user privacy.',\n    id='security.W022',\n)\n\nE023 = Error(\n    'You have set the SECURE_REFERRER_POLICY setting to an invalid value.',\n    hint='Valid values are: {}.'.format(', '.join(sorted(REFERRER_POLICY_VALUES))),\n    id='security.E023',\n)\n\n\ndef _security_middleware():\n    return 'django.middleware.security.SecurityMiddleware' in settings.MIDDLEWARE\n\n\ndef _xframe_middleware():\n    return 'django.middleware.clickjacking.XFrameOptionsMiddleware' in settings.MIDDLEWARE\n\n\n@register(Tags.security, deploy=True)\ndef check_security_middleware(app_configs, **kwargs):\n    passed_check = _security_middleware()\n    return [] if passed_check else [W001]\n\n\n@register(Tags.security, deploy=True)\n--\n        if settings.SECURE_REFERRER_POLICY is None:\n            return [W022]\n        # Support a comma-separated string or iterable of values to allow fallback.\n        if isinstance(settings.SECURE_REFERRER_POLICY, str):\n            values = {v.strip() for v in settings.SECURE_REFERRER_POLICY.split(',')}\n        else:\n            values = set(settings.SECURE_REFERRER_POLICY)\n        if not values <= REFERRER_POLICY_VALUES:\n            return [E023]\n    return []\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's also check what valid referrer policy values are defined:\n\n```bash\ncd /testbed && grep -r \"REFERRER_POLICY_VALUES\" --include=\"*.py\" .\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-f33b6102094f45b2952a30b512a69c79",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988386,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n./django/core/checks/security/base.py:REFERRER_POLICY_VALUES = {\n./django/core/checks/security/base.py:    hint='Valid values are: {}.'.format(', '.join(sorted(REFERRER_POLICY_VALUES))),\n./django/core/checks/security/base.py:        if not values <= REFERRER_POLICY_VALUES:\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "Let's see the definition of valid referrer policy values:\n\n```bash\ncd /testbed && cat django/core/checks/security/base.py | grep -A 10 \"REFERRER_POLICY_VALUES = {\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-ca3b966c932b4342ae24e9f5282cc60e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988388,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nREFERRER_POLICY_VALUES = {\n    'no-referrer', 'no-referrer-when-downgrade', 'origin',\n    'origin-when-cross-origin', 'same-origin', 'strict-origin',\n    'strict-origin-when-cross-origin', 'unsafe-url',\n}\n\nSECRET_KEY_MIN_LENGTH = 50\nSECRET_KEY_MIN_UNIQUE_CHARACTERS = 5\n\nW001 = Warning(\n    \"You do not have 'django.middleware.security.SecurityMiddleware' \"\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Based on the PR description and code analysis, I need to change the default value of SECURE_REFERRER_POLICY from None to \"same-origin\" in the global settings file. This will ensure that Django applications by default send a Referrer-Policy header with the value \"same-origin\", which is more secure than the current default of None.\n\nLet's make the change:\n\n```bash\ncd /testbed && sed -i 's/SECURE_REFERRER_POLICY = None/SECURE_REFERRER_POLICY = \"same-origin\"/' django/conf/global_settings.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-e94f52c47fd74a07b9b653b362d58b0a",
+          "choices": [
+            {
+              "delta": {
+                "content": "```",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988389,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now let's verify the change was made correctly:\n\n```bash\ncd /testbed && cat django/conf/global_settings.py | grep SECURE_REFERRER_POLICY\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-0b391d37927e4e2697384773d340eeaf",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988393,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nSECURE_REFERRER_POLICY = \"same-origin\"\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's create a simple script to test that the Referrer-Policy header is now being set correctly with our new default value:\n\n```bash\ncd /testbed && cat <<'EOF' > test_referrer_policy.py\nfrom django.conf import settings\nfrom django.middleware.security import SecurityMiddleware\nfrom django.http import HttpRequest, HttpResponse\n\n# Create a mock request and response\nrequest = HttpRequest()\nresponse = HttpResponse()\n\n# Initialize the middleware with our settings\nmiddleware = SecurityMiddleware()\nresponse = middleware.process_response(request, response)\n\n# Check if the Referrer-Policy header is set correctly\nprint(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\nprint(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\nEOF\n```\n\nLet's run the test script:\n\n```bash\ncd /testbed && python test_referrer_policy.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-df4ff0e1d5494349859c5aa2ff8bc0bb",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988394,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Please always provide EXACTLY ONE action in triple backticks, found 2 actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that)."
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: I apologize for the error. Let me run the commands separately:\n\n```bash\ncd /testbed && python test_referrer_policy.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-355e49c165cc4f8b8f0260f3026f782e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988400,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>2</returncode>\n<output>\npython: can't open file 'test_referrer_policy.py': [Errno 2] No such file or directory\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me try creating the file again:\n\n```bash\ncd /testbed && cat <<'EOF' > test_referrer_policy.py\nfrom django.conf import settings\nfrom django.middleware.security import SecurityMiddleware\nfrom django.http import HttpRequest, HttpResponse\n\n# Create a mock request and response\nrequest = HttpRequest()\nresponse = HttpResponse()\n\n# Initialize the middleware with our settings\nmiddleware = SecurityMiddleware()\nresponse = middleware.process_response(request, response)\n\n# Check if the Referrer-Policy header is set correctly\nprint(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\nprint(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-c559755064aa4b9ebc095466d068308b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988401,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "\n\n```bash\ncd /testbed && python test_referrer_policy.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-b5505f230316488bbf4159ac1f34e9f3",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988406,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\nTraceback (most recent call last):\n  File \"test_referrer_policy.py\", line 6, in <module>\n    request = HttpRequest()\n  File \"/testbed/django/http/request.py\", line 56, in __init__\n    self.GET = QueryDict(mutable=True)\n  File \"/testbed/django/http/request.py\", line 444, in __init__\n    self.encoding = encoding or settings.DEFAULT_CHARSET\n  File \"/testbed/django/conf/__init__.py\", line 77, in __getattr__\n    self._setup(name)\n  File \"/testbed/django/conf/__init__.py\", line 62, in _setup\n    % (desc, ENVIRONMENT_VARIABLE))\ndjango.core.exceptions.ImproperlyConfigured: Requested setting DEFAULT_CHARSET, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: I need to configure Django settings properly in our test script:\n\n```bash\ncd /testbed && cat <<'EOF' > test_referrer_policy.py\nimport os\nimport django\nfrom django.conf import settings\nfrom django.middleware.security import SecurityMiddleware\nfrom django.http import HttpRequest, HttpResponse\n\n# Configure Django settings\nif not settings.configured:\n    settings.configure(\n        DEBUG=True,\n        USE_TZ=True,\n        DATABASES={\n            \"default\": {\n                \"ENGINE\": \"django.db.backends.sqlite3\",\n                \"NAME\": \":memory:\",\n            }\n        },\n        INSTALLED_APPS=[\n            \"django.contrib.auth\",\n            \"django.contrib.contenttypes\",\n            \"django.contrib.sites\",\n            \"django.contrib.nextauth\",\n            \"django.contrib.messages\",\n            \"django.contrib.staticfiles\",\n        ],\n        SITE_ID=1,\n        MIDDLEWARE_CLASSES=(\n            'django.middleware.security.SecurityMiddleware',\n        ),\n        ROOT_URLCONF=\"test_referrer_policy\",\n        SECRET_KEY=\"fake-key\",\n    )\n    django.setup()\n\n# Create a mock request and response\nrequest = HttpRequest()\nresponse = HttpResponse()\n\n# Initialize the middleware with our settings\nmiddleware = SecurityMiddleware()\nresponse = middleware.process_response(request, response)\n\n# Check if the Referrer-Policy header is set correctly\nprint(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\nprint(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-6bba707a77bc4e45b99707b715c9ef01",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988408,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "\n\n```bash\ncd /testbed && python test_referrer_policy.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-8bbd625feed44c63be2ab62f61780c5c",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988421,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\nTraceback (most recent call last):\n  File \"/testbed/django/apps/config.py\", line 118, in create\n    cls = getattr(mod, cls_name)\nAttributeError: module 'django.contrib' has no attribute 'nextauth'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"test_referrer_policy.py\", line 33, in <module>\n    django.setup()\n  File \"/testbed/django/__init__.py\", line 24, in setup\n    apps.populate(settings.INSTALLED_APPS)\n  File \"/testbed/django/apps/registry.py\", line 91, in populate\n    app_config = AppConfig.create(entry)\n  File \"/testbed/django/apps/config.py\", line 136, in create\n    import_module(entry)\n  File \"/opt/miniconda3/envs/testbed/lib/python3.6/importlib/__init__.py\", line 126, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n  File \"<frozen importlib._bootstrap>\", line 994, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 971, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 953, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'django.contrib.nextauth'\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me fix the typo in the app name:\n\n```bash\ncd /testbed && cat <<'EOF' > test_referrer_policy.py\nimport os\nimport django\nfrom django.conf import settings\nfrom django.middleware.security import SecurityMiddleware\nfrom django.http import HttpRequest, HttpResponse\n\n# Configure Django settings\nif not settings.configured:\n    settings.configure(\n        DEBUG=True,\n        USE_TZ=True,\n        DATABASES={\n            \"default\": {\n                \"ENGINE\": \"django.db.backends.sqlite3\",\n                \"NAME\": \":memory:\",\n            }\n        },\n        INSTALLED_APPS=[\n            \"django.contrib.auth\",\n            \"django.contrib.contenttypes\",\n            \"django.contrib.sites\",\n            \"django.contrib.next_auth\",\n            \"django.contrib.messages\",\n            \"django.contrib.staticfiles\",\n        ],\n        SITE_ID=1,\n        MIDDLEWARE_CLASSES=(\n            'django.middleware.security.SecurityMiddleware',\n        ),\n        ROOT_URLCONF=\"test_referrer_policy\",\n        SECRET_KEY=\"fake-key\",\n    )\n    django.setup()\n\n# Create a mock request and response\nrequest = HttpRequest()\nresponse = HttpResponse()\n\n# Initialize the middleware with our settings\nmiddleware = SecurityMiddleware()\nresponse = middleware.process_response(request, response)\n\n# Check if the Referrer-Policy header is set correctly\nprint(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\nprint(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-9e22ac8d0a334495848d94463fce6cc1",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988422,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "\n\n```bash\ncd /testbed && python test_referrer_policy.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-a59a9ec0e9ed4e6e9276bfa8c3e6e158",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988434,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\nTraceback (most recent call last):\n  File \"/testbed/django/apps/config.py\", line 118, in create\n    cls = getattr(mod, cls_name)\nAttributeError: module 'django.contrib' has no attribute 'next_auth'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"test_referrer_policy.py\", line 33, in <module>\n    django.setup()\n  File \"/testbed/django/__init__.py\", line 24, in setup\n    apps.populate(settings.INSTALLED_APPS)\n  File \"/testbed/django/apps/registry.py\", line 91, in populate\n    app_config = AppConfig.create(entry)\n  File \"/testbed/django/apps/config.py\", line 136, in create\n    import_module(entry)\n  File \"/opt/miniconda3/envs/testbed/lib/python3.6/importlib/__init__.py\", line 126, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n  File \"<frozen importlib._bootstrap>\", line 994, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 971, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 953, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'django.contrib.next_auth'\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me simplify the test script to avoid app configuration issues:\n\n```bash\ncd /testbed && cat <<'EOF' > test_referrer_policy.py\nimport os\nimport django\nfrom django.conf import settings\nfrom django.middleware.security import SecurityMiddleware\nfrom django.http import HttpRequest, HttpResponse\n\n# Configure minimal Django settings\nif not settings.configured:\n    settings.configure(\n        SECRET_KEY=\"fake-key\",\n    )\n    django.setup()\n\n# Create a mock request and response\nrequest = HttpRequest()\nresponse = HttpResponse()\n\n# Initialize the middleware with our settings\nmiddleware = SecurityMiddleware()\nresponse = middleware.process_response(request, response)\n\n# Check if the Referrer-Policy header is set correctly\nprint(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\nprint(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-60dbc5eb9b7b4a1ab7ff81489bc53308",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988435,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "\n\n```bash\ncd /testbed && python test_referrer_policy.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-81ab5ccd8e6843e2b951b0a5216a3cf7",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988443,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nReferrer-Policy header: same-origin\nExpected value: same-origin\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Great! Our test confirms that the Referrer-Policy header is now being set correctly with the value \"same-origin\" by default.\n\nLet's also check if the security middleware is properly handling the new default value by looking at the tests:\n\n```bash\ncd /testbed && cat tests/middleware/test_security.py | grep -A 20 \"test_referrer_policy\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-5ed3d6acd8c24901a8a8f3c6bf0e57df",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988444,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    def test_referrer_policy_off(self):\n        \"\"\"\n        With SECURE_REFERRER_POLICY set to None, the middleware does not add a\n        \"Referrer-Policy\" header to the response.\n        \"\"\"\n        self.assertNotIn('Referrer-Policy', self.process_response())\n\n    def test_referrer_policy_on(self):\n        \"\"\"\n        With SECURE_REFERRER_POLICY set to a valid value, the middleware adds a\n        \"Referrer-Policy\" header to the response.\n        \"\"\"\n        tests = (\n            ('strict-origin', 'strict-origin'),\n            ('strict-origin,origin', 'strict-origin,origin'),\n            ('strict-origin, origin', 'strict-origin,origin'),\n            (['strict-origin', 'origin'], 'strict-origin,origin'),\n            (('strict-origin', 'origin'), 'strict-origin,origin'),\n        )\n        for value, expected in tests:\n            with self.subTest(value=value), override_settings(SECURE_REFERRER_POLICY=value):\n                self.assertEqual(self.process_response()['Referrer-Policy'], expected)\n\n    @override_settings(SECURE_REFERRER_POLICY='strict-origin')\n    def test_referrer_policy_already_present(self):\n        \"\"\"\n        The middleware will not override a \"Referrer-Policy\" header already\n        present in the response.\n        \"\"\"\n        response = self.process_response(headers={'Referrer-Policy': 'unsafe-url'})\n        self.assertEqual(response['Referrer-Policy'], 'unsafe-url')\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's also check the security check framework to ensure it doesn't flag our new default value:\n\n```bash\ncd /testbed && cat tests/check_framework/test_security.py | grep -A 20 \"test_referrer_policy\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-22d2fbccb9184cf5875aa98dcc929136",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988448,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "Let's look at the security check tests more broadly:\n\n```bash\ncd /testbed && cat tests/check_framework/test_security.py | grep -A 10 \"referrer_policy\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-1fd484b5c2f44f819a7a63243fbd9cab",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988450,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n        from django.core.checks.security.base import check_referrer_policy\n        return check_referrer_policy\n\n    @override_settings(\n        MIDDLEWARE=['django.middleware.security.SecurityMiddleware'],\n        SECURE_REFERRER_POLICY=None,\n    )\n    def test_no_referrer_policy(self):\n        self.assertEqual(self.func(None), [base.W022])\n\n    @override_settings(MIDDLEWARE=[], SECURE_REFERRER_POLICY=None)\n    def test_no_referrer_policy_no_middleware(self):\n        \"\"\"\n        Don't warn if SECURE_REFERRER_POLICY is None and SecurityMiddleware\n        isn't in MIDDLEWARE.\n        \"\"\"\n        self.assertEqual(self.func(None), [])\n\n    @override_settings(MIDDLEWARE=['django.middleware.security.SecurityMiddleware'])\n    def test_with_referrer_policy(self):\n        tests = (\n            'strict-origin',\n            'strict-origin,origin',\n            'strict-origin, origin',\n            ['strict-origin', 'origin'],\n            ('strict-origin', 'origin'),\n        )\n        for value in tests:\n            with self.subTest(value=value), override_settings(SECURE_REFERRER_POLICY=value):\n                self.assertEqual(self.func(None), [])\n--\n    def test_with_invalid_referrer_policy(self):\n        self.assertEqual(self.func(None), [base.E023])\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's create a more comprehensive test to ensure our change works correctly with different settings:\n\n```bash\ncd /testbed && cat <<'EOF' > test_referrer_policy_comprehensive.py\nimport os\nimport django\nfrom django.conf import settings\nfrom django.middleware.security import SecurityMiddleware\nfrom django.http import HttpRequest, HttpResponse\nfrom django.test.utils import override_settings\n\n# Configure minimal Django settings\nif not settings.configured:\n    settings.configure(\n        SECRET_KEY=\"fake-key\",\n    )\n    django.setup()\n\ndef test_with_default_settings():\n    \"\"\"Test with default settings (should use our new default of 'same-origin')\"\"\"\n    request = HttpRequest()\n    response = HttpResponse()\n    middleware = SecurityMiddleware()\n    response = middleware.process_response(request, response)\n    print(\"Default settings - Referrer-Policy header:\", response.get('Referrer-Policy'))\n    assert response.get('Referrer-Policy') == \"same-origin\"\n\ndef test_with_explicit_none():\n    \"\"\"Test with SECURE_REFERRER_POLICY explicitly set to None (should not add header)\"\"\"\n    request = HttpRequest()\n    response = HttpResponse()\n    with override_settings(SECURE_REFERRER_POLICY=None):\n        middleware = SecurityMiddleware()\n        response = middleware.process_response(request, response)\n        print(\"None setting - Referrer-Policy header present:\", 'Referrer-Policy' in response)\n        assert 'Referrer-Policy' not in response\n\ndef test_with_custom_value():\n    \"\"\"Test with a custom SECURE_REFERRER_POLICY value (should use that value)\"\"\"\n    custom_value = \"strict-origin\"\n    request = HttpRequest()\n    response = HttpResponse()\n    with override_settings(SECURE_REFERRER_POLICY=custom_value):\n        middleware = SecurityMiddleware()\n        response = middleware.process_response(request, response)\n        print(f\"Custom value '{custom_value}' - Referrer-Policy header:\", response.get('Referrer-Policy'))\n        assert response.get('Referrer-Policy') == custom_value\n\ndef test_with_multiple_values():\n    \"\"\"Test with multiple SECURE_REFERRER_POLICY values (should join them with commas)\"\"\"\n    multiple_values = [\"strict-origin\", \"origin\"]\n    expected_value = \"strict-origin,origin\"\n    request = HttpRequest()\n    response = HttpResponse()\n    with override_settings(SECURE_REFERRER_POLICY=multiple_values):\n        middleware = SecurityMiddleware()\n        response = middleware.process_response(request, response)\n        print(f\"Multiple values {multiple_values} - Referrer-Policy header:\", response.get('Referrer-Policy'))\n        assert response.get('Referrer-Policy') == expected_value\n\nif __name__ == \"__main__\":\n    test_with_default_settings()\n    test_with_explicit_none()\n    test_with_custom_value()\n    test_with_multiple_values()\n    print(\"All tests passed!\")\nEOF\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-c95455f237044789a55995a55c839824",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988452,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "Let's run our comprehensive test:\n\n```bash\ncd /testbed && python test_referrer_policy_comprehensive.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-d03988da7b8b49fd88009d0aef7d1341",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988478,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nDefault settings - Referrer-Policy header: same-origin\nNone setting - Referrer-Policy header present: False\nCustom value 'strict-origin' - Referrer-Policy header: strict-origin\nMultiple values ['strict-origin', 'origin'] - Referrer-Policy header: strict-origin,origin\nAll tests passed!\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Perfect! Our comprehensive test confirms that:\n\n1. With default settings, the Referrer-Policy header is set to \"same-origin\" (our new default)\n2. When SECURE_REFERRER_POLICY is explicitly set to None, no Referrer-Policy header is added\n3. When a custom value is provided for SECURE_REFERRER_POLICY, that value is used\n4. When multiple values are provided for SECURE_REFERRER_POLICY, they are joined with commas as expected\n\nLet's submit our changes:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-bb492d6830114a579b95f32aed1af01b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988480,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "diff --git a/django/conf/global_settings.py b/django/conf/global_settings.py\nindex 09c9b95d26..5e30e02773 100644\n--- a/django/conf/global_settings.py\n+++ b/django/conf/global_settings.py\n@@ -637,6 +637,6 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = False\n SECURE_HSTS_PRELOAD = False\n SECURE_HSTS_SECONDS = 0\n SECURE_REDIRECT_EXEMPT = []\n-SECURE_REFERRER_POLICY = None\n+SECURE_REFERRER_POLICY = \"same-origin\"\n SECURE_SSL_HOST = None\n SECURE_SSL_REDIRECT = False\ndiff --git a/test_referrer_policy.py b/test_referrer_policy.py\nnew file mode 100644\nindex 0000000000..24aae1a49f\n--- /dev/null\n+++ b/test_referrer_policy.py\n@@ -0,0 +1,24 @@\n+import os\n+import django\n+from django.conf import settings\n+from django.middleware.security import SecurityMiddleware\n+from django.http import HttpRequest, HttpResponse\n+\n+# Configure minimal Django settings\n+if not settings.configured:\n+    settings.configure(\n+        SECRET_KEY=\"fake-key\",\n+    )\n+    django.setup()\n+\n+# Create a mock request and response\n+request = HttpRequest()\n+response = HttpResponse()\n+\n+# Initialize the middleware with our settings\n+middleware = SecurityMiddleware()\n+response = middleware.process_response(request, response)\n+\n+# Check if the Referrer-Policy header is set correctly\n+print(\"Referrer-Policy header:\", response.get('Referrer-Policy'))\n+print(\"Expected value:\", settings.SECURE_REFERRER_POLICY)\ndiff --git a/test_referrer_policy_comprehensive.py b/test_referrer_policy_comprehensive.py\nnew file mode 100644\nindex 0000000000..7fc75c91cd\n--- /dev/null\n+++ b/test_referrer_policy_comprehensive.py\n@@ -0,0 +1,62 @@\n+import os\n+import django\n+from django.conf import settings\n+from django.middleware.security import SecurityMiddleware\n+from django.http import HttpRequest, HttpResponse\n+from django.test.utils import override_settings\n+\n+# Configure minimal Django settings\n+if not settings.configured:\n+    settings.configure(\n+        SECRET_KEY=\"fake-key\",\n+    )\n+    django.setup()\n+\n+def test_with_default_settings():\n+    \"\"\"Test with default settings (should use our new default of 'same-origin')\"\"\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    middleware = SecurityMiddleware()\n+    response = middleware.process_response(request, response)\n+    print(\"Default settings - Referrer-Policy header:\", response.get('Referrer-Policy'))\n+    assert response.get('Referrer-Policy') == \"same-origin\"\n+\n+def test_with_explicit_none():\n+    \"\"\"Test with SECURE_REFERRER_POLICY explicitly set to None (should not add header)\"\"\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    with override_settings(SECURE_REFERRER_POLICY=None):\n+        middleware = SecurityMiddleware()\n+        response = middleware.process_response(request, response)\n+        print(\"None setting - Referrer-Policy header present:\", 'Referrer-Policy' in response)\n+        assert 'Referrer-Policy' not in response\n+\n+def test_with_custom_value():\n+    \"\"\"Test with a custom SECURE_REFERRER_POLICY value (should use that value)\"\"\"\n+    custom_value = \"strict-origin\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    with override_settings(SECURE_REFERRER_POLICY=custom_value):\n+        middleware = SecurityMiddleware()\n+        response = middleware.process_response(request, response)\n+        print(f\"Custom value '{custom_value}' - Referrer-Policy header:\", response.get('Referrer-Policy'))\n+        assert response.get('Referrer-Policy') == custom_value\n+\n+def test_with_multiple_values():\n+    \"\"\"Test with multiple SECURE_REFERRER_POLICY values (should join them with commas)\"\"\"\n+    multiple_values = [\"strict-origin\", \"origin\"]\n+    expected_value = \"strict-origin,origin\"\n+    request = HttpRequest()\n+    response = HttpResponse()\n+    with override_settings(SECURE_REFERRER_POLICY=multiple_values):\n+        middleware = SecurityMiddleware()\n+        response = middleware.process_response(request, response)\n+        print(f\"Multiple values {multiple_values} - Referrer-Policy header:\", response.get('Referrer-Policy'))\n+        assert response.get('Referrer-Policy') == expected_value\n+\n+if __name__ == \"__main__\":\n+    test_with_default_settings()\n+    test_with_explicit_none()\n+    test_with_custom_value()\n+    test_with_multiple_values()\n+    print(\"All tests passed!\")\n"
+    }
+  ],
+  "trajectory_format": "mini-swe-agent-1",
+  "instance_id": "django__django-12419"
+}

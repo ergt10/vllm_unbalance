@@ -1,0 +1,210 @@
+{
+  "instance_id": "django__django-16560",
+  "env_prepare": {
+    "start_ts": 1766990023.8232934,
+    "end_ts": 1766990028.0209637,
+    "total_s": 4.197670221328735,
+    "environment_class": "docker",
+    "image": "docker.io/swebench/sweb.eval.x86_64.django_1776_django-16560:latest"
+  },
+  "steps": [
+    {
+      "step_index": 1,
+      "query": {
+        "start_ts": 1766990028.0222363,
+        "first_token_ts": 1766990028.1908705,
+        "last_token_ts": 1766990030.0230014,
+        "prefill_s": 0.16863417625427246,
+        "decode_s": 1.8321309089660645,
+        "total_s": 2.000765085220337
+      },
+      "tool": {
+        "start_ts": 1766990030.0230408,
+        "action": "ls -la",
+        "end_ts": 1766990030.1951866,
+        "total_s": 0.17214584350585938,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 2,
+      "query": {
+        "start_ts": 1766990030.1970904,
+        "first_token_ts": 1766990030.3776553,
+        "last_token_ts": 1766990032.8954375,
+        "prefill_s": 0.18056488037109375,
+        "decode_s": 2.517782211303711,
+        "total_s": 2.6983470916748047
+      },
+      "tool": {
+        "start_ts": 1766990032.8954856,
+        "action": "find django -type f -name \"*.py\" | grep -E \"forms|validators|constraint\"",
+        "end_ts": 1766990033.0554864,
+        "total_s": 0.16000080108642578,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 3,
+      "query": {
+        "start_ts": 1766990033.0579906,
+        "first_token_ts": 1766990033.3319921,
+        "last_token_ts": 1766990035.2476974,
+        "prefill_s": 0.2740015983581543,
+        "decode_s": 1.9157052040100098,
+        "total_s": 2.189706802368164
+      },
+      "tool": {
+        "start_ts": 1766990035.2477455,
+        "action": "cat django/core/validators.py | grep -A 20 \"class BaseConstraint\"",
+        "end_ts": 1766990035.3769224,
+        "total_s": 0.12917685508728027,
+        "returncode": 1
+      }
+    },
+    {
+      "step_index": 4,
+      "query": {
+        "start_ts": 1766990035.3797898,
+        "first_token_ts": 1766990035.4577994,
+        "last_token_ts": 1766990036.9368021,
+        "prefill_s": 0.07800960540771484,
+        "decode_s": 1.4790027141571045,
+        "total_s": 1.5570123195648193
+      },
+      "tool": {
+        "start_ts": 1766990036.9368494,
+        "action": "cat django/db/models/constraints.py | grep -A 20 \"class BaseConstraint\"",
+        "end_ts": 1766990037.0823758,
+        "total_s": 0.14552640914916992,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 5,
+      "query": {
+        "start_ts": 1766990037.0844586,
+        "first_token_ts": 1766990037.4688656,
+        "last_token_ts": 1766990038.7607346,
+        "prefill_s": 0.38440704345703125,
+        "decode_s": 1.2918689250946045,
+        "total_s": 1.6762759685516357
+      },
+      "tool": {
+        "start_ts": 1766990038.7607822,
+        "action": "cat django/db/models/constraints.py",
+        "end_ts": 1766990038.9128022,
+        "total_s": 0.15201997756958008,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 6,
+      "query": {
+        "start_ts": 1766990038.9148335,
+        "first_token_ts": 1766990039.2408354,
+        "last_token_ts": 1766990040.5926342,
+        "prefill_s": 0.3260018825531006,
+        "decode_s": 1.3517987728118896,
+        "total_s": 1.6778006553649902
+      },
+      "tool": {
+        "start_ts": 1766990040.59268,
+        "action": "grep -r \"class ValidationError\" django/core/",
+        "end_ts": 1766990040.7547917,
+        "total_s": 0.16211175918579102,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 7,
+      "query": {
+        "start_ts": 1766990040.7569187,
+        "first_token_ts": 1766990041.0766544,
+        "last_token_ts": 1766990042.0752892,
+        "prefill_s": 0.3197357654571533,
+        "decode_s": 0.9986348152160645,
+        "total_s": 1.3183705806732178
+      },
+      "tool": {
+        "start_ts": 1766990042.0753365,
+        "action": "cat django/core/exceptions.py | grep -A 20 \"class ValidationError\"",
+        "end_ts": 1766990042.2835724,
+        "total_s": 0.2082359790802002,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 8,
+      "query": {
+        "start_ts": 1766990042.285438,
+        "first_token_ts": 1766990042.5133898,
+        "last_token_ts": 1766990043.834731,
+        "prefill_s": 0.2279517650604248,
+        "decode_s": 1.3213412761688232,
+        "total_s": 1.549293041229248
+      },
+      "tool": {
+        "start_ts": 1766990043.8347838,
+        "action": "cat django/core/exceptions.py | grep -A 50 \"class ValidationError\"",
+        "end_ts": 1766990043.979612,
+        "total_s": 0.14482831954956055,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 9,
+      "query": {
+        "start_ts": 1766990043.9817917,
+        "first_token_ts": 1766990044.0943508,
+        "last_token_ts": 1766990055.367681,
+        "prefill_s": 0.11255908012390137,
+        "decode_s": 11.273330211639404,
+        "total_s": 11.385889291763306
+      },
+      "tool": {}
+    },
+    {
+      "step_index": 10,
+      "query": {
+        "start_ts": 1766990055.368607,
+        "first_token_ts": 1766990055.4982896,
+        "last_token_ts": 1766990068.8163571,
+        "prefill_s": 0.1296825408935547,
+        "decode_s": 13.31806755065918,
+        "total_s": 13.447750091552734
+      },
+      "tool": {}
+    },
+    {
+      "step_index": 11,
+      "query": {
+        "start_ts": 1766990068.8172042,
+        "first_token_ts": 1766990068.9560845,
+        "last_token_ts": 1766990094.7028925,
+        "prefill_s": 0.13888025283813477,
+        "decode_s": 25.74680805206299,
+        "total_s": 25.885688304901123
+      },
+      "tool": {}
+    },
+    {
+      "step_index": 12,
+      "query": {
+        "start_ts": 1766990094.7037244,
+        "first_token_ts": 1766990094.822954,
+        "last_token_ts": 1766990096.2734685,
+        "prefill_s": 0.11922955513000488,
+        "decode_s": 1.450514554977417,
+        "total_s": 1.5697441101074219
+      },
+      "tool": {
+        "start_ts": 1766990096.2735143,
+        "action": "echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached",
+        "end_ts": 1766990096.7271543,
+        "total_s": 0.4536399841308594,
+        "returncode": 0
+      }
+    }
+  ]
+}

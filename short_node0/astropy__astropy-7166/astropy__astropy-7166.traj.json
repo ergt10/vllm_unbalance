@@ -1,0 +1,757 @@
+{
+  "info": {
+    "exit_status": "Submitted",
+    "submission": "diff --git a/astropy/utils/misc.py b/astropy/utils/misc.py\nindex de3fb01d1..436a4af8b 100644\n--- a/astropy/utils/misc.py\n+++ b/astropy/utils/misc.py\n@@ -528,7 +528,8 @@ class InheritDocstrings(type):\n                 not key.startswith('_'))\n \n         for key, val in dct.items():\n-            if (inspect.isfunction(val) and\n+            if (\n+inspect.isfunction(val) or isinstance(val, property) and val.fget is not None and\n                 is_public_member(key) and\n                 val.__doc__ is None):\n                 for base in cls.__mro__[1:]:\ndiff --git a/reproduce_issue.py b/reproduce_issue.py\nnew file mode 100644\nindex 000000000..3a9bcb763\n--- /dev/null\n+++ b/reproduce_issue.py\n@@ -0,0 +1,23 @@\n+from astropy.utils.misc import InheritDocstrings\n+\n+class Base(metaclass=InheritDocstrings):\n+    @property\n+    def value(self):\n+        \"This is a property docstring\"\n+        return 42\n+\n+class Child(Base):\n+    @property\n+    def value(self):\n+        return 43\n+\n+# This should print the docstring from the parent class, but it doesn't\n+print(\"Base.value.__doc__:\", Base.value.__doc__)\n+print(\"Child.value.__doc__:\", Child.value.__doc__)\n+\n+# Let's also check what type these are\n+print(\"\\nTypes:\")\n+print(\"Base.value:\", type(Base.value))\n+print(\"Child.value:\", type(Child.value))\n+print(\"Is Base.value a function?\", callable(Base.value))\n+print(\"Is Child.value a function?\", callable(Child.value))\n",
+    "model_stats": {
+      "instance_cost": 0.0,
+      "api_calls": 19
+    },
+    "mini_version": "1.14.4",
+    "config": {
+      "agent": {
+        "system_template": "You are a helpful assistant that can interact multiple times with a computer shell to solve programming tasks.\nYour response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).\n\nInclude a THOUGHT section before your command where you explain your reasoning process.\nFormat your response as shown in <format_example>.\n\n<format_example>\nTHOUGHT: Your reasoning and analysis here\n\n```bash\nyour_command_here\n```\n</format_example>\n\nFailure to follow these rules will cause your response to be rejected.\n",
+        "instance_template": "<pr_description>\nConsider the following PR description:\n{{task}}\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n\nIMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.\n\nFor each response:\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide exactly ONE bash command to execute\n\n## Important Boundaries\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\nYou are operating in an environment where\n1. You write a single command\n2. The system executes that command in a subshell\n3. You see the result\n4. You write your next command\n\nEach response should include:\n1. A **THOUGHT** section where you explain your reasoning and plan\n2. A single bash code block with your command\n\nFormat your responses like this:\n\n<format_example>\nTHOUGHT: Here I explain my reasoning process, analysis of the current situation,\nand what I'm trying to accomplish with the command below.\n\n```bash\nyour_command_here\n```\n</format_example>\n\nCommands must be specified in a single bash code block:\n\n```bash\nyour_command_here\n```\n\n**CRITICAL REQUIREMENTS:**\n- Your response SHOULD include a THOUGHT section explaining your reasoning\n- Your response MUST include EXACTLY ONE bash code block\n- This bash block MUST contain EXACTLY ONE command (or a set of commands connected with && or ||)\n- If you include zero or multiple bash blocks, or no command at all, YOUR RESPONSE WILL FAIL\n- Do NOT try to run multiple independent commands in separate blocks in one response\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nTHOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```\n</example_response>\n\nExample of an INCORRECT response:\n<example_response>\nTHOUGHT: I need to examine the codebase and then look at a specific file. I'll run multiple commands to do this.\n\n```bash\nls -la\n```\n\nNow I'll read the file:\n\n```bash\ncat file.txt\n```\n</example_response>\n\nIf you need to run multiple commands, either:\n1. Combine them in one block using && or ||\n```bash\ncommand1 && command2 || echo \"Error occurred\"\n```\n\n2. Wait for the first command to complete, see its output, then issue the next command in your following response.\n\n## Environment Details\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- If a command isn't available, you can install it\n\n## Useful Command Examples\n\n### Create a new file:\n```bash\ncat <<'EOF' > newfile.py\nimport numpy as np\nhello = \"world\"\nprint(hello)\nEOF\n```\n\n### Edit files with sed:\n```bash\n# Replace all occurrences\nsed -i 's/old_string/new_string/g' filename.py\n\n# Replace only first occurrence\nsed -i 's/old_string/new_string/' filename.py\n\n# Replace first occurrence on line 1\nsed -i '1s/old_string/new_string/' filename.py\n\n# Replace all occurrences in lines 1-10\nsed -i '1,10s/old_string/new_string/g' filename.py\n```\n\n### View file content:\n```bash\n# View specific lines with numbers\nnl -ba filename.py | sed -n '10,20p'\n```\n\n### Any other command you want to run\n```bash\nanything\n```\n\n## Submission\nWhen you've completed your work (reading, editing, testing), and cannot make further progress\nissue exactly the following command:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```\n\nThis command will submit your work.\nYou cannot continue working (reading, editing, testing) in any way on this task after submitting.\n</instructions>\n",
+        "timeout_template": "The last command <command>{{action['action']}}</command> timed out and has been killed.\nThe output of the command was:\n <output>\n{{output}}\n</output>\nPlease try another command and make sure to avoid those requiring interactive input.",
+        "format_error_template": "Please always provide EXACTLY ONE action in triple backticks, found {{actions|length}} actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that).\n",
+        "action_observation_template": "<returncode>{{output.returncode}}</returncode>\n{% if output.output | length < 10000 -%}\n<output>\n{{ output.output -}}\n</output>\n{%- else -%}\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning>\n{%- set elided_chars = output.output | length - 10000 -%}\n<output_head>\n{{ output.output[:5000] }}\n</output_head>\n<elided_chars>\n{{ elided_chars }} characters elided\n</elided_chars>\n<output_tail>\n{{ output.output[-5000:] }}\n</output_tail>\n{%- endif -%}\n",
+        "step_limit": 135,
+        "cost_limit": 10.0,
+        "job_timeout": 0
+      },
+      "model": {
+        "model_name": "/mnt/shared/models/SWE-agent-LM-32B",
+        "base_url": "http://localhost:8301/v1",
+        "api_key": "EMPTY",
+        "model_kwargs": {
+          "drop_params": true,
+          "temperature": 0.0
+        },
+        "job_id": 24,
+        "step_limit": 135,
+        "stream": true,
+        "timeout": null,
+        "max_completion_tokens": 2048
+      },
+      "environment": {
+        "image": "docker.io/swebench/sweb.eval.x86_64.astropy_1776_astropy-7166:latest",
+        "cwd": "/testbed",
+        "env": {
+          "PAGER": "cat",
+          "MANPAGER": "cat",
+          "LESS": "-R",
+          "PIP_PROGRESS_BAR": "off",
+          "TQDM_DISABLE": "1"
+        },
+        "forward_env": [],
+        "timeout": 60,
+        "executable": "docker",
+        "run_args": [
+          "--rm"
+        ],
+        "container_timeout": "2h",
+        "pull_timeout": 600,
+        "throttle_sleep_max": 5.0,
+        "throttle_sleep_seed": 1234
+      },
+      "agent_type": "minisweagent.run.extra.swebench.ProgressTrackingAgent",
+      "model_type": "minisweagent.models.vllm_model.VllmModel",
+      "environment_type": "minisweagent.environments.docker.DockerEnvironment"
+    }
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can interact multiple times with a computer shell to solve programming tasks.\nYour response must contain exactly ONE bash code block with ONE command (or commands connected with && or ||).\n\nInclude a THOUGHT section before your command where you explain your reasoning process.\nFormat your response as shown in <format_example>.\n\n<format_example>\nTHOUGHT: Your reasoning and analysis here\n\n```bash\nyour_command_here\n```\n</format_example>\n\nFailure to follow these rules will cause your response to be rejected."
+    },
+    {
+      "role": "user",
+      "content": "<pr_description>\nConsider the following PR description:\nInheritDocstrings metaclass doesn't work for properties\nInside the InheritDocstrings metaclass it uses `inspect.isfunction` which returns `False` for properties.\n\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n\nIMPORTANT: This is an interactive process where you will think and issue ONE command, see its result, then think and issue your next command.\n\nFor each response:\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide exactly ONE bash command to execute\n\n## Important Boundaries\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\nYou are operating in an environment where\n1. You write a single command\n2. The system executes that command in a subshell\n3. You see the result\n4. You write your next command\n\nEach response should include:\n1. A **THOUGHT** section where you explain your reasoning and plan\n2. A single bash code block with your command\n\nFormat your responses like this:\n\n<format_example>\nTHOUGHT: Here I explain my reasoning process, analysis of the current situation,\nand what I'm trying to accomplish with the command below.\n\n```bash\nyour_command_here\n```\n</format_example>\n\nCommands must be specified in a single bash code block:\n\n```bash\nyour_command_here\n```\n\n**CRITICAL REQUIREMENTS:**\n- Your response SHOULD include a THOUGHT section explaining your reasoning\n- Your response MUST include EXACTLY ONE bash code block\n- This bash block MUST contain EXACTLY ONE command (or a set of commands connected with && or ||)\n- If you include zero or multiple bash blocks, or no command at all, YOUR RESPONSE WILL FAIL\n- Do NOT try to run multiple independent commands in separate blocks in one response\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nTHOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```\n</example_response>\n\nExample of an INCORRECT response:\n<example_response>\nTHOUGHT: I need to examine the codebase and then look at a specific file. I'll run multiple commands to do this.\n\n```bash\nls -la\n```\n\nNow I'll read the file:\n\n```bash\ncat file.txt\n```\n</example_response>\n\nIf you need to run multiple commands, either:\n1. Combine them in one block using && or ||\n```bash\ncommand1 && command2 || echo \"Error occurred\"\n```\n\n2. Wait for the first command to complete, see its output, then issue the next command in your following response.\n\n## Environment Details\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- If a command isn't available, you can install it\n\n## Useful Command Examples\n\n### Create a new file:\n```bash\ncat <<'EOF' > newfile.py\nimport numpy as np\nhello = \"world\"\nprint(hello)\nEOF\n```\n\n### Edit files with sed:\n```bash\n# Replace all occurrences\nsed -i 's/old_string/new_string/g' filename.py\n\n# Replace only first occurrence\nsed -i 's/old_string/new_string/' filename.py\n\n# Replace first occurrence on line 1\nsed -i '1s/old_string/new_string/' filename.py\n\n# Replace all occurrences in lines 1-10\nsed -i '1,10s/old_string/new_string/g' filename.py\n```\n\n### View file content:\n```bash\n# View specific lines with numbers\nnl -ba filename.py | sed -n '10,20p'\n```\n\n### Any other command you want to run\n```bash\nanything\n```\n\n## Submission\nWhen you've completed your work (reading, editing, testing), and cannot make further progress\nissue exactly the following command:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```\n\nThis command will submit your work.\nYou cannot continue working (reading, editing, testing) in any way on this task after submitting.\n</instructions>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: I need to understand the structure of the repository first. Let me check what files are in the current directory to get a better understanding of the codebase.\n\n```bash\nls -la\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-da7cee95d231456997922832f5bcf706",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988409,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\ntotal 500\ndrwxrwxrwx  1 root root   4096 Sep 10 09:34 .\ndrwxr-xr-x  1 root root   4096 Dec 29 06:06 ..\n-rw-r--r--  1 root root      0 Sep 10 09:33 .astropy-root\ndrwxrwxrwx  2 root root   4096 Sep 10 09:33 .circleci\ndrwxrwxrwx  9 root root   4096 Sep 10 09:36 .git\n-rw-r--r--  1 root root     73 Sep 10 09:33 .gitattributes\n-rw-r--r--  1 root root    766 Sep 10 09:33 .gitignore\n-rw-r--r--  1 root root    108 Sep 10 09:33 .gitmodules\n-rw-r--r--  1 root root   7645 Sep 10 09:33 .mailmap\n-rw-r--r--  1 root root    646 Sep 10 09:33 .rtd-environment.yml\n-rw-r--r--  1 root root   7548 Sep 10 09:33 .travis.yml\n-rw-r--r--  1 root root 300394 Sep 10 09:33 CHANGES.rst\n-rw-r--r--  1 root root   1973 Sep 10 09:33 CITATION\n-rw-r--r--  1 root root     96 Sep 10 09:33 CODE_OF_CONDUCT.md\n-rw-r--r--  1 root root   6401 Sep 10 09:33 CONTRIBUTING.md\n-rw-r--r--  1 root root   1496 Sep 10 09:33 LICENSE.rst\n-rw-r--r--  1 root root   1627 Sep 10 09:33 MANIFEST.in\n-rw-r--r--  1 root root   2507 Sep 10 09:33 README.rst\ndrwxr-xr-x  2 root root   4096 Sep 10 09:34 __pycache__\n-rw-r--r--  1 root root  35725 Sep 10 09:33 ah_bootstrap.py\n-rw-r--r--  1 root root   1117 Sep 10 09:33 appveyor.yml\ndrwxrwxrwx 22 root root   4096 Sep 10 09:36 astropy\ndrwxr-xr-x  2 root root   4096 Sep 10 09:34 astropy.egg-info\ndrwxr-xr-x  6 root root   4096 Sep 10 09:34 astropy_helpers\ndrwxr-xr-x  3 root root   4096 Sep 10 09:34 build\ndrwxrwxrwx  6 root root   4096 Sep 10 09:33 cextern\n-rw-r--r--  1 root root    159 Sep 10 09:33 conftest.py\ndrwxrwxrwx 21 root root   4096 Sep 10 09:33 docs\ndrwxr-xr-x  5 root root   4096 Sep 10 09:33 examples\n-rw-r--r--  1 root root  12537 Sep 10 09:33 ez_setup.py\ndrwxrwxrwx  2 root root   4096 Sep 10 09:33 licenses\n-rw-r--r--  1 root root     26 Sep 10 09:33 pip-requirements\n-rw-r--r--  1 root root    234 Sep 10 09:33 pip-requirements-dev\n-rw-r--r--  1 root root     67 Sep 10 09:33 pip-requirements-doc\n-rw-r--r--  1 root root     89 Sep 10 09:33 readthedocs.yml\n-rw-r--r--  1 root root    742 Sep 10 09:33 setup.cfg\n-rwxr-xr-x  1 root root   4268 Sep 10 09:33 setup.py\ndrwxr-xr-x  2 root root   4096 Sep 10 09:33 static\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now I need to find the InheritDocstrings metaclass mentioned in the PR description. Let me search for it in the codebase.\n\n```bash\nfind /testbed -type f -name \"*.py\" -exec grep -l \"InheritDocstrings\" {} \\;\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-d3c4e89322ff42af83a8913988e02104",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988411,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n/testbed/astropy/utils/tests/test_misc.py\n/testbed/astropy/utils/misc.py\n/testbed/astropy/config/configuration.py\n/testbed/astropy/modeling/core.py\n/testbed/astropy/constants/constant.py\n/testbed/astropy/visualization/stretch.py\n/testbed/astropy/visualization/interval.py\n/testbed/astropy/coordinates/representation.py\n/testbed/astropy/io/votable/tree.py\n/testbed/astropy/units/core.py\n/testbed/astropy/units/format/base.py\n/testbed/astropy/units/quantity.py\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let's examine the main implementation of InheritDocstrings in misc.py since that's likely the original file:\n\n```bash\ncat /testbed/astropy/utils/misc.py | grep -A 20 \"class InheritDocstrings\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-436de694fe944b06aad3962707ed337e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988415,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nclass InheritDocstrings(type):\n    \"\"\"\n    This metaclass makes methods of a class automatically have their\n    docstrings filled in from the methods they override in the base\n    class.\n\n    If the class uses multiple inheritance, the docstring will be\n    chosen from the first class in the bases list, in the same way as\n    methods are normally resolved in Python.  If this results in\n    selecting the wrong docstring, the docstring will need to be\n    explicitly included on the method.\n\n    For example::\n\n        >>> from astropy.utils.misc import InheritDocstrings\n        >>> class A(metaclass=InheritDocstrings):\n        ...     def wiggle(self):\n        ...         \"Wiggle the thingamajig\"\n        ...         pass\n        >>> class B(A):\n        ...     def wiggle(self):\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me see more of the implementation to understand how it works:\n\n```bash\ncat /testbed/astropy/utils/misc.py | grep -A 50 \"class InheritDocstrings\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-1e65f6d1e7cf46849e26a038afaff740",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988418,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nclass InheritDocstrings(type):\n    \"\"\"\n    This metaclass makes methods of a class automatically have their\n    docstrings filled in from the methods they override in the base\n    class.\n\n    If the class uses multiple inheritance, the docstring will be\n    chosen from the first class in the bases list, in the same way as\n    methods are normally resolved in Python.  If this results in\n    selecting the wrong docstring, the docstring will need to be\n    explicitly included on the method.\n\n    For example::\n\n        >>> from astropy.utils.misc import InheritDocstrings\n        >>> class A(metaclass=InheritDocstrings):\n        ...     def wiggle(self):\n        ...         \"Wiggle the thingamajig\"\n        ...         pass\n        >>> class B(A):\n        ...     def wiggle(self):\n        ...         pass\n        >>> B.wiggle.__doc__\n        u'Wiggle the thingamajig'\n    \"\"\"\n\n    def __init__(cls, name, bases, dct):\n        def is_public_member(key):\n            return (\n                (key.startswith('__') and key.endswith('__')\n                 and len(key) > 4) or\n                not key.startswith('_'))\n\n        for key, val in dct.items():\n            if (inspect.isfunction(val) and\n                is_public_member(key) and\n                val.__doc__ is None):\n                for base in cls.__mro__[1:]:\n                    super_method = getattr(base, key, None)\n                    if super_method is not None:\n                        val.__doc__ = super_method.__doc__\n                        break\n\n        super().__init__(name, bases, dct)\n\n\nclass OrderedDescriptor(metaclass=abc.ABCMeta):\n    \"\"\"\n    Base class for descriptors whose order in the class body should be\n    preserved.  Intended for use in concert with the\n    `OrderedDescriptorContainer` metaclass.\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now let's look at the test file to understand how this is being tested:\n\n```bash\ncat /testbed/astropy/utils/tests/test_misc.py | grep -A 20 \"InheritDocstrings\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-b6a6bd9f53eb41e7b13473c726ea9c99",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988420,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n    class Base(metaclass=misc.InheritDocstrings):\n        def __call__(self, *args):\n            \"FOO\"\n            pass\n\n    class Subclass(Base):\n        def __call__(self, *args):\n            pass\n\n    if Base.__call__.__doc__ is not None:\n        # TODO: Maybe if __doc__ is None this test should be skipped instead?\n        assert Subclass.__call__.__doc__ == \"FOO\"\n\n\ndef test_set_locale():\n    # First, test if the required locales are available\n    current = locale.setlocale(locale.LC_ALL)\n    try:\n        locale.setlocale(locale.LC_ALL, str('en_US'))\n        locale.setlocale(locale.LC_ALL, str('de_DE'))\n    except locale.Error as e:\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me check if there are any tests specifically for properties with InheritDocstrings:\n\n```bash\ncat /testbed/astropy/utils/tests/test_misc.py | grep -A 20 \"property\" | grep -B 20 \"InheritDocstrings\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-e501c18b64414c338ea0244556a91c80",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988422,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>1</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me create a script to reproduce the issue with properties. I'll create a simple test case that demonstrates the problem:\n\n```bash\ncat <<'EOF' > /testbed/reproduce_issue.py\nfrom astropy.utils.misc import InheritDocstrings\n\nclass Base(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        \"This is a property docstring\"\n        return 42\n\nclass Child(Base):\n    @property\n    def value(self):\n        return 43\n\n# This should print the docstring from the parent class, but it doesn't\nprint(\"Base.value.__doc__:\", Base.value.__doc__)\nprint(\"Child.value.__doc__:\", Child.value.__doc__)\n\n# Let's also check what type these are\nprint(\"\\nTypes:\")\nprint(\"Base.value:\", type(Base.value))\nprint(\"Child.value:\", type(Child.value))\nprint(\"Is Base.value a function?\", callable(Base.value))\nprint(\"Is Child.value a function?\", callable(Child.value))\nEOF\n```\n\nLet's run the script to see the issue:\n\n```bash\npython /testbed/reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-08ee8eb8c56b4c4e82cdcebbde97bc7e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988425,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Please always provide EXACTLY ONE action in triple backticks, found 2 actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that)."
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: I need to run the script separately from creating it. Let me do that now:\n\n```bash\npython /testbed/reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-531227bc41ec4d278575496923c921d7",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988434,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>2</returncode>\n<output>\npython: can't open file '/testbed/reproduce_issue.py': [Errno 2] No such file or directory\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me try creating the file again with proper permissions:\n\n```bash\ncat <<'EOF' > /testbed/reproduce_issue.py\nfrom astropy.utils.misc import InheritDocstrings\n\nclass Base(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        \"This is a property docstring\"\n        return 42\n\nclass Child(Base):\n    @property\n    def value(self):\n        return 43\n\n# This should print the docstring from the parent class, but it doesn't\nprint(\"Base.value.__doc__:\", Base.value.__doc__)\nprint(\"Child.value.__doc__:\", Child.value.__doc__)\n\n# Let's also check what type these are\nprint(\"\\nTypes:\")\nprint(\"Base.value:\", type(Base.value))\nprint(\"Child.value:\", type(Child.value))\nprint(\"Is Base.value a function?\", callable(Base.value))\nprint(\"Is Child.value a function?\", callable(Child.value))\nEOF\n&& python /testbed/reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-2c38522f29bd40a489e14be7f44e1766",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988436,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>2</returncode>\n<output>\nbash: -c: line 26: syntax error near unexpected token `&&'\nbash: -c: line 26: `&& python /testbed/reproduce_issue.py'\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me try a different approach to run the script:\n\n```bash\ncat <<'EOF' > /testbed/reproduce_issue.py\nfrom astropy.utils.misc import InheritDocstrings\n\nclass Base(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        \"This is a property docstring\"\n        return 42\n\nclass Child(Base):\n    @property\n    def value(self):\n        return 43\n\n# This should print the docstring from the parent class, but it doesn't\nprint(\"Base.value.__doc__:\", Base.value.__doc__)\nprint(\"Child.value.__doc__:\", Child.value.__doc__)\n\n# Let's also check what type these are\nprint(\"\\nTypes:\")\nprint(\"Base.value:\", type(Base.value))\nprint(\"Child.value:\", type(Child.value))\nprint(\"Is Base.value a function?\", callable(Base.value))\nprint(\"Is Child.value a function?\", callable(Child.value))\nEOF\n```\n\n```bash\npython /testbed/reproduce_issue.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-4c3d1a95d2344458b9fe7c01f04986dd",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988445,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Please always provide EXACTLY ONE action in triple backticks, found 2 actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that)."
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me try a different approach to run the script:\n\n```bash\ncd /testbed && python -c \"\nfrom astropy.utils.misc import InheritDocstrings\n\nclass Base(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        \\\"\\\"\\\"This is a property docstring\\\"\\\"\\\"\n        return 42\n\nclass Child(Base):\n    @property\n    def value(self):\n        return 43\n\nprint('Base.value.__doc__:', Base.value.__doc__)\nprint('Child.value.__doc__:', Child.value.__doc__)\nprint('\\nTypes:')\nprint('Base.value:', type(Base.value))\nprint('Child.value:', type(Child.value))\nprint('Is Base.value a function?', callable(Base.value))\nprint('Is Child.value a function?', callable(Child.value))\n\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-5a1528ad40514d9fbfd9897468dbd77e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988455,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nBase.value.__doc__: This is a property docstring\nChild.value.__doc__: None\n\nTypes:\nBase.value: <class 'property'>\nChild.value: <class 'property'>\nIs Base.value a function? False\nIs Child.value a function? False\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Great! Now I can see the issue. The InheritDocstrings metaclass is not working for properties because it uses `inspect.isfunction` which returns `False` for properties. \n\nLet me check the current implementation of the InheritDocstrings class in more detail:\n\n```bash\ngrep -n -A 30 \"class InheritDocstrings\" /testbed/astropy/utils/misc.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-fd092f7b50584e32bde82290679659f1",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988463,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n497:class InheritDocstrings(type):\n498-    \"\"\"\n499-    This metaclass makes methods of a class automatically have their\n500-    docstrings filled in from the methods they override in the base\n501-    class.\n502-\n503-    If the class uses multiple inheritance, the docstring will be\n504-    chosen from the first class in the bases list, in the same way as\n505-    methods are normally resolved in Python.  If this results in\n506-    selecting the wrong docstring, the docstring will need to be\n507-    explicitly included on the method.\n508-\n509-    For example::\n510-\n511-        >>> from astropy.utils.misc import InheritDocstrings\n512-        >>> class A(metaclass=InheritDocstrings):\n513-        ...     def wiggle(self):\n514-        ...         \"Wiggle the thingamajig\"\n515-        ...         pass\n516-        >>> class B(A):\n517-        ...     def wiggle(self):\n518-        ...         pass\n519-        >>> B.wiggle.__doc__\n520-        u'Wiggle the thingamajig'\n521-    \"\"\"\n522-\n523-    def __init__(cls, name, bases, dct):\n524-        def is_public_member(key):\n525-            return (\n526-                (key.startswith('__') and key.endswith('__')\n527-                 and len(key) > 4) or\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Let me see the rest of the implementation:\n\n```bash\ngrep -n -A 50 \"def __init__\" /testbed/astropy/utils/misc.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-dca99ac0ba8e428cb655ae0e6cc1a8d1",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988467,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning><output_head>\n146:    def __init__(self, seed):\n147-        self.seed = seed\n148-\n149-    def __enter__(self):\n150-        from numpy import random\n151-\n152-        self.startstate = random.get_state()\n153-        random.seed(self.seed)\n154-\n155-    def __exit__(self, exc_type, exc_value, traceback):\n156-        from numpy import random\n157-\n158-        random.set_state(self.startstate)\n159-\n160-\n161-def find_api_page(obj, version=None, openinbrowser=True, timeout=None):\n162-    \"\"\"\n163-    Determines the URL of the API page for the specified object, and\n164-    optionally open that page in a web browser.\n165-\n166-    .. note::\n167-        You must be connected to the internet for this to function even if\n168-        ``openinbrowser`` is `False`, unless you provide a local version of\n169-        the documentation to ``version`` (e.g., ``file:///path/to/docs``).\n170-\n171-    Parameters\n172-    ----------\n173-    obj\n174-        The object to open the docs for or its fully-qualified name\n175-        (as a str).\n176-    version : str\n177-        The doc version - either a version number like '0.1', 'dev' for\n178-        the development/latest docs, or a URL to point to a specific\n179-        location that should be the *base* of the documentation. Defaults to\n180-        latest if you are on aren't on a release, otherwise, the version you\n181-        are on.\n182-    openinbrowser : bool\n183-        If `True`, the `webbrowser` package will be used to open the doc\n184-        page in a new web browser window.\n185-    timeout : number, optional\n186-        The number of seconds to wait before timing-out the query to\n187-        the astropy documentation.  If not given, the default python\n188-        stdlib timeout will be used.\n189-\n190-    Returns\n191-    -------\n192-    url : str\n193-        The loaded URL\n194-\n195-    Raises\n196-    ------\n--\n523:    def __init__(cls, name, bases, dct):\n524-        def is_public_member(key):\n525-            return (\n526-                (key.startswith('__') and key.endswith('__')\n527-                 and len(key) > 4) or\n528-                not key.startswith('_'))\n529-\n530-        for key, val in dct.items():\n531-            if (inspect.isfunction(val) and\n532-                is_public_member(key) and\n533-                val.__doc__ is None):\n534-                for base in cls.__mro__[1:]:\n535-                    super_method = getattr(base, key, None)\n536-                    if super_method is not None:\n537-                        val.__doc__ = super_method.__doc__\n538-                        break\n539-\n540-        super().__init__(name, bases, dct)\n541-\n542-\n543-class OrderedDescriptor(metaclass=abc.ABCMeta):\n544-    \"\"\"\n545-    Base class for descriptors whose order in the class body should be\n546-    preserved.  Intended for use in concert with the\n547-    `OrderedDescriptorContainer` metaclass.\n548-\n549-    Subclasses of `OrderedDescriptor` must define a value for a class attribute\n550-    called ``_class_attribute_``.  This is the name of a class attribute on the\n551-    *container* class for these descriptors, which will be set to an\n552-    `~collections.OrderedDict` at class creation time.  This\n553-    `~collections.OrderedDict` will contain a mapping of all class attributes\n554-    that were assigned instances of the `OrderedDescriptor` subclass, to the\n555-    instances themselves.  See the documentation for\n556-    `OrderedDescriptorContainer` for a concrete example.\n557-\n558-    Optionally, subclasses of `OrderedDescriptor` may define a value for a\n559-    class attribute called ``_name_attribute_``.  This should be the name of\n560-    an attribute on instances of the subclass.  When specified, during\n561-    creation of a class containing these descriptors, the name attribute on\n562-    each instance will be set to the name of the class attribute it was\n563-    assigned to on the class.\n564-\n565-    .. note::\n566-\n567-        Although this class is intended for use with *descriptors* (i.e.\n568-        classes that define any of the ``__get__``, ``__set__``, or\n569-        ``__delete__`` magic methods), this base class is not itself a\n570-        descriptor, and technically this could be used for classes that are\n571-        not descriptors too.  However, use with descriptors is the original\n572-        intended purpose.\n573-    \"\"\"\n--\n600:    def __init__(self, *args, **kwargs):\n601-        # The _nextid attribute is shared across all subclasses so that\n602-        # different subclasses of OrderedDescriptors can be sorted correctly\n603-        # between themselves\n604-        self.__order = OrderedDescriptor._nextid\n605-        OrderedDescriptor._nextid += 1\n606-        super().__init__()\n607-\n608-    def __lt__(self, other):\n609-        \"\"\"\n610-        Defined for convenient sorting of `OrderedDescriptor` instances, which\n611-        are defined to sort in their creation order.\n612-        \"\"\"\n613-\n614-        if (isinstance(self, OrderedDescriptor) and\n615-              \n</output_head>\n<elided_chars>\n5053 characters elided\n</elided_chars>\n<output_tail>\n([('x', <TypedAttribute(name=x, type=(float, int))>),\n751-        ('y', <TypedAttribute(name=y, type=(float, int))>),\n752-        ('z', <TypedAttribute(name=z, type=(float, int))>)])\n753-\n754-    .. note::\n755-\n756-        Hopefully it is clear from these examples that this construction\n757-        also allows a class of type `OrderedDescriptorContainer` to use\n758-        multiple different `OrderedDescriptor` classes simultaneously.\n759-    \"\"\"\n760-\n761-    _inherit_descriptors_ = ()\n762-\n763:    def __init__(cls, cls_name, bases, members):\n764-        descriptors = defaultdict(list)\n765-        seen = set()\n766-        inherit_descriptors = ()\n767-        descr_bases = {}\n768-\n769-        for mro_cls in cls.__mro__:\n770-            for name, obj in mro_cls.__dict__.items():\n771-                if name in seen:\n772-                    # Checks if we've already seen an attribute of the given\n773-                    # name (if so it will override anything of the same name in\n774-                    # any base class)\n775-                    continue\n776-\n777-                seen.add(name)\n778-\n779-                if (not isinstance(obj, OrderedDescriptor) or\n780-                        (inherit_descriptors and\n781-                            not isinstance(obj, inherit_descriptors))):\n782-                    # The second condition applies when checking any\n783-                    # subclasses, to see if we can inherit any descriptors of\n784-                    # the given type from subclasses (by default inheritance is\n785-                    # disabled unless the class has _inherit_descriptors_\n786-                    # defined)\n787-                    continue\n788-\n789-                if obj._name_attribute_ is not None:\n790-                    setattr(obj, obj._name_attribute_, name)\n791-\n792-                # Don't just use the descriptor's class directly; instead go\n793-                # through its MRO and find the class on which _class_attribute_\n794-                # is defined directly.  This way subclasses of some\n795-                # OrderedDescriptor *may* override _class_attribute_ and have\n796-                # its own _class_attribute_, but by default all subclasses of\n797-                # some OrderedDescriptor are still grouped together\n798-                # TODO: It might be worth clarifying this in the docs\n799-                if obj.__class__ not in descr_bases:\n800-                    for obj_cls_base in obj.__class__.__mro__:\n801-                        if '_class_attribute_' in obj_cls_base.__dict__:\n802-                            descr_bases[obj.__class__] = obj_cls_base\n803-                            descriptors[obj_cls_base].append((obj, name))\n804-                            break\n805-                else:\n806-                    # Make sure to put obj first for sorting purposes\n807-                    obj_cls_base = descr_bases[obj.__class__]\n808-                    descriptors[obj_cls_base].append((obj, name))\n809-\n810-            if not getattr(mro_cls, '_inherit_descriptors_', False):\n811-                # If _inherit_descriptors_ is undefined then we don't inherit\n812-                # any OrderedDescriptors from any of the base classes, and\n813-                # there's no reason to continue through the MRO\n--\n1058:    def __init__(self, shape_a, shape_a_idx, shape_b, shape_b_idx):\n1059-        super().__init__(shape_a, shape_a_idx, shape_b, shape_b_idx)\n1060-\n1061-\n1062-def check_broadcast(*shapes):\n1063-    \"\"\"\n1064-    Determines whether two or more Numpy arrays can be broadcast with each\n1065-    other based on their shape tuple alone.\n1066-\n1067-    Parameters\n1068-    ----------\n1069-    *shapes : tuple\n1070-        All shapes to include in the comparison.  If only one shape is given it\n1071-        is passed through unmodified.  If no shapes are given returns an empty\n1072-        `tuple`.\n1073-\n1074-    Returns\n1075-    -------\n1076-    broadcast : `tuple`\n1077-        If all shapes are mutually broadcastable, returns a tuple of the full\n1078-        broadcast shape.\n1079-    \"\"\"\n1080-\n1081-    if len(shapes) == 0:\n1082-        return ()\n1083-    elif len(shapes) == 1:\n1084-        return shapes[0]\n1085-\n1086-    reversed_shapes = (reversed(shape) for shape in shapes)\n1087-\n1088-    full_shape = []\n1089-\n1090-    for dims in zip_longest(*reversed_shapes, fillvalue=1):\n1091-        max_dim = 1\n1092-        max_dim_idx = None\n1093-        for idx, dim in enumerate(dims):\n1094-            if dim == 1:\n1095-                continue\n1096-\n1097-            if max_dim == 1:\n1098-                # The first dimension of size greater than 1\n1099-                max_dim = dim\n1100-                max_dim_idx = idx\n1101-            elif dim != max_dim:\n1102-                raise IncompatibleShapeError(\n1103-                    shapes[max_dim_idx], max_dim_idx, shapes[idx], idx)\n1104-\n1105-        full_shape.append(max_dim)\n1106-\n1107-    return tuple(full_shape[::-1])\n1108-\n\n</output_tail>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now I have a good understanding of the issue. The InheritDocstrings metaclass is only checking for functions using `inspect.isfunction`, but it should also handle properties. Let me modify the code to fix this issue:\n\n```bash\nsed -i '531,532s/inspect.isfunction(val) and/\\\ninspect.isfunction(val) or isinstance(val, property) and val.fget is not None and/' /testbed/astropy/utils/misc.py\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-e05d9a4c4a1b4225a81da0bae126ba7a",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988469,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Now let's run our test script again to see if the issue is fixed:\n\n```bash\ncd /testbed && python -c \"\nfrom astropy.utils.misc import InheritDocstrings\n\nclass Base(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        \\\"\\\"\\\"This is a property docstring\\\"\\\"\\\"\n        return 42\n\nclass Child(Base):\n    @property\n    def value(self):\n        return 43\n\nprint('Base.value.__doc__:', Base.value.__doc__)\nprint('Child.value.__doc__:', Child.value.__doc__)\nprint('\\nTypes:')\nprint('Base.value:', type(Base.value))\nprint('Child.value:', type(Child.value))\nprint('Is Base.value a function?', callable(Base.value))\nprint('Is Child.value a function?', callable(Child.value))\n\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-ea2cdaf5bc1e4155a2fbff2ceeb82a2f",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988474,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nBase.value.__doc__: This is a property docstring\nChild.value.__doc__: This is a property docstring\n\nTypes:\nBase.value: <class 'property'>\nChild.value: <class 'property'>\nIs Base.value a function? False\nIs Child.value a function? False\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "</output>",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-5e44981f473d4216930747bb97b5a36b",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988483,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Please always provide EXACTLY ONE action in triple backticks, found 0 actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that)."
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: Great! The fix is working. Now let's test some edge cases to make sure our fix is robust:\n\n```bash\ncd /testbed && python -c \"\nfrom astropy.utils.misc import InheritDocstrings\n\n# Test 1: Property with no docstring in parent\nprint('Test 1: Property with no docstring in parent')\nclass Base1(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        return 42\n\nclass Child1(Base1):\n    @property\n    def value(self):\n        \\\"\\\"\\\"This is a child docstring\\\"\\\"\\\"\n        return 43\n\nprint('Base1.value.__doc__:', Base1.value.__doc__)\nprint('Child1.value.__doc__:', Child1.value.__doc__)\n\n# Test 2: Multiple inheritance\nprint('\\nTest 2: Multiple inheritance')\nclass Mixin(metaclass=InheritDocstrings):\n    @property\n    def mixin_value(self):\n        \\\"\\\"\\\"Mixin property docstring\\\"\\\"\\\"\n        return 100\n\nclass Parent(metaclass=InheritDocstrings):\n    @property\n    def parent_value(self):\n        \\\"\\\"\\\"Parent property docstring\\\"\\\"\\\"\n        return 200\n\nclass MultiChild(Mixin, Parent):\n    @property\n    def mixin_value(self):\n        return 101\n        \n    @property\n    def parent_value(self):\n        return 201\n\nprint('Mixin.mixin_value.__doc__:', Mixin.mixin_value.__doc__)\nprint('Parent.parent_value.__doc__:', Parent.parent_value.__doc__)\nprint('MultiChild.mixin_value.__doc__:', MultiChild.mixin_value.__doc__)\nprint('MultiChild.parent_value.__doc__:', MultiChild.parent_value.__doc__)\n\n# Test 3: Explicit docstring on child property\nprint('\\nTest 3: Explicit docstring on child property')\nclass Base3(metaclass=InheritDocstrings):\n    @property\n    def value(self):\n        \\\"\\\"\\\"Base property docstring\\\"\\\"\\\"\n        return 42\n\nclass Child3(Base3):\n    @property\n    def value(self):\n        \\\"\\\"\\\"Child property docstring\\\"\\\"\\\"\n        return 43\n\nprint('Base3.value.__doc__:', Base3.value.__doc__)\nprint('Child3.value.__doc__:', Child3.value.__doc__)\n\"\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-24606bb827344c0ba03430c86a73dd2e",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988483,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "<returncode>0</returncode>\n<output>\nTest 1: Property with no docstring in parent\nBase1.value.__doc__: None\nChild1.value.__doc__: This is a child docstring\n\nTest 2: Multiple inheritance\nMixin.mixin_value.__doc__: Mixin property docstring\nParent.parent_value.__doc__: Parent property docstring\nMultiChild.mixin_value.__doc__: Mixin property docstring\nMultiChild.parent_value.__doc__: Parent property docstring\n\nTest 3: Explicit docstring on child property\nBase3.value.__doc__: Base property docstring\nChild3.value.__doc__: Child property docstring\n</output>"
+    },
+    {
+      "role": "assistant",
+      "content": "</output>",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-2a173842a43147c3a87d975a1324becc",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988506,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "Please always provide EXACTLY ONE action in triple backticks, found 0 actions.\n\nPlease format your action in triple backticks as shown in <response_example>.\n\n<response_example>\nHere are some thoughts about why you want to perform the action.\n\n```bash\n<action>\n```\n</response_example>\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that)."
+    },
+    {
+      "role": "assistant",
+      "content": "THOUGHT: The edge cases look good! Let's summarize what we did:\n\n1. We identified the issue: InheritDocstrings metaclass doesn't work for properties because it uses `inspect.isfunction` which returns `False` for properties.\n\n2. We modified the code in `/testbed/astropy/utils/misc.py` to handle properties by adding a condition to check if the value is a property and if it has a getter function (`fget`) that is not None.\n\n3. We tested the fix with various scenarios:\n   - Basic property inheritance\n   - Property with no docstring in parent (should keep child docstring)\n   - Multiple inheritance (should choose the first class in the MRO)\n   - Explicit docstring on child property (should not inherit)\n\nThe fix is working correctly for all these cases. Let's submit the final output:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached\n```",
+      "extra": {
+        "response": {
+          "id": "chatcmpl-14145b0fe6384d04aa6b193e7a069a32",
+          "choices": [
+            {
+              "delta": {
+                "content": "",
+                "function_call": null,
+                "refusal": null,
+                "role": null,
+                "tool_calls": null
+              },
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "stop_reason": null,
+              "token_ids": null
+            }
+          ],
+          "created": 1766988507,
+          "model": "/mnt/shared/models/SWE-agent-LM-32B",
+          "object": "chat.completion.chunk",
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": null
+        },
+        "streamed": true
+      }
+    },
+    {
+      "role": "user",
+      "content": "diff --git a/astropy/utils/misc.py b/astropy/utils/misc.py\nindex de3fb01d1..436a4af8b 100644\n--- a/astropy/utils/misc.py\n+++ b/astropy/utils/misc.py\n@@ -528,7 +528,8 @@ class InheritDocstrings(type):\n                 not key.startswith('_'))\n \n         for key, val in dct.items():\n-            if (inspect.isfunction(val) and\n+            if (\n+inspect.isfunction(val) or isinstance(val, property) and val.fget is not None and\n                 is_public_member(key) and\n                 val.__doc__ is None):\n                 for base in cls.__mro__[1:]:\ndiff --git a/reproduce_issue.py b/reproduce_issue.py\nnew file mode 100644\nindex 000000000..3a9bcb763\n--- /dev/null\n+++ b/reproduce_issue.py\n@@ -0,0 +1,23 @@\n+from astropy.utils.misc import InheritDocstrings\n+\n+class Base(metaclass=InheritDocstrings):\n+    @property\n+    def value(self):\n+        \"This is a property docstring\"\n+        return 42\n+\n+class Child(Base):\n+    @property\n+    def value(self):\n+        return 43\n+\n+# This should print the docstring from the parent class, but it doesn't\n+print(\"Base.value.__doc__:\", Base.value.__doc__)\n+print(\"Child.value.__doc__:\", Child.value.__doc__)\n+\n+# Let's also check what type these are\n+print(\"\\nTypes:\")\n+print(\"Base.value:\", type(Base.value))\n+print(\"Child.value:\", type(Child.value))\n+print(\"Is Base.value a function?\", callable(Base.value))\n+print(\"Is Child.value a function?\", callable(Child.value))\n"
+    }
+  ],
+  "trajectory_format": "mini-swe-agent-1",
+  "instance_id": "astropy__astropy-7166"
+}

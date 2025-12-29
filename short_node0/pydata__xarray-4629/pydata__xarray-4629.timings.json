@@ -1,0 +1,138 @@
+{
+  "instance_id": "pydata__xarray-4629",
+  "env_prepare": {
+    "start_ts": 1766988286.6875892,
+    "end_ts": 1766988397.1428337,
+    "total_s": 110.45524454116821,
+    "environment_class": "docker",
+    "image": "docker.io/swebench/sweb.eval.x86_64.pydata_1776_xarray-4629:latest"
+  },
+  "steps": [
+    {
+      "step_index": 1,
+      "query": {
+        "start_ts": 1766988397.1441472,
+        "first_token_ts": 1766988397.3921375,
+        "last_token_ts": 1766988399.625948,
+        "prefill_s": 0.24799036979675293,
+        "decode_s": 2.2338104248046875,
+        "total_s": 2.4818007946014404
+      },
+      "tool": {
+        "start_ts": 1766988399.6260002,
+        "action": "find /testbed -name \"merge.py\" | grep -v \"__pycache__\"",
+        "end_ts": 1766988399.813345,
+        "total_s": 0.18734478950500488,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 2,
+      "query": {
+        "start_ts": 1766988399.815639,
+        "first_token_ts": 1766988399.9717317,
+        "last_token_ts": 1766988402.4616177,
+        "prefill_s": 0.15609264373779297,
+        "decode_s": 2.4898860454559326,
+        "total_s": 2.6459786891937256
+      },
+      "tool": {
+        "start_ts": 1766988402.461663,
+        "action": "nl -ba /testbed/xarray/core/merge.py | sed -n '500,510p'",
+        "end_ts": 1766988402.6230688,
+        "total_s": 0.1614058017730713,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 3,
+      "query": {
+        "start_ts": 1766988402.6250901,
+        "first_token_ts": 1766988402.745331,
+        "last_token_ts": 1766988417.566963,
+        "prefill_s": 0.12024092674255371,
+        "decode_s": 14.821631908416748,
+        "total_s": 14.941872835159302
+      },
+      "tool": {
+        "start_ts": 1766988417.5670402,
+        "action": "cat <<'EOF' > reproduce_issue.py\nimport xarray as xr\n\n# Create two datasets with different attribute values\nxds1 = xr.Dataset(attrs={'a': 'b'})\nxds2 = xr.Dataset(attrs={'a': 'c'})\n\n# Print initial attribute values\nprint(f\"a1: {xds1.attrs['a']}, a2: {xds2.attrs['a']}\")\n\n# Merge the datasets with combine_attrs='override'\nxds3 = xr.merge([xds1, xds2], combine_attrs='override')\n\n# Print attribute values after merge\nprint(f\"a1: {xds1.attrs['a']}, a2: {xds2.attrs['a']}, a3: {xds3.attrs['a']}\")\n\n# Change the attribute in the merged dataset\nxds3.attrs['a'] = 'd'\n\n# Print attribute values after changing the merged dataset's attribute\nprint(f\"a1: {xds1.attrs['a']}, a2: {xds2.attrs['a']}, a3: {xds3.attrs['a']}\")\nEOF",
+        "end_ts": 1766988417.803536,
+        "total_s": 0.2364957332611084,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 4,
+      "query": {
+        "start_ts": 1766988417.8061843,
+        "first_token_ts": 1766988418.0130947,
+        "last_token_ts": 1766988419.1278071,
+        "prefill_s": 0.2069103717803955,
+        "decode_s": 1.1147124767303467,
+        "total_s": 1.3216228485107422
+      },
+      "tool": {
+        "start_ts": 1766988419.127869,
+        "action": "cd /testbed && python reproduce_issue.py",
+        "end_ts": 1766988420.8565276,
+        "total_s": 1.728658676147461,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 5,
+      "query": {
+        "start_ts": 1766988420.8591738,
+        "first_token_ts": 1766988420.959034,
+        "last_token_ts": 1766988424.1554902,
+        "prefill_s": 0.09986019134521484,
+        "decode_s": 3.19645619392395,
+        "total_s": 3.296316385269165
+      },
+      "tool": {
+        "start_ts": 1766988424.1555395,
+        "action": "sed -i '504s/return variable_attrs\\[0\\]/return dict(variable_attrs\\[0\\])/g' /testbed/xarray/core/merge.py",
+        "end_ts": 1766988424.3343797,
+        "total_s": 0.17884016036987305,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 6,
+      "query": {
+        "start_ts": 1766988424.3373559,
+        "first_token_ts": 1766988424.4620788,
+        "last_token_ts": 1766988425.6501503,
+        "prefill_s": 0.12472295761108398,
+        "decode_s": 1.1880714893341064,
+        "total_s": 1.3127944469451904
+      },
+      "tool": {
+        "start_ts": 1766988425.650211,
+        "action": "cd /testbed && python reproduce_issue.py",
+        "end_ts": 1766988427.0498126,
+        "total_s": 1.3996014595031738,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 7,
+      "query": {
+        "start_ts": 1766988427.051781,
+        "first_token_ts": 1766988427.1465926,
+        "last_token_ts": 1766988428.2126102,
+        "prefill_s": 0.09481167793273926,
+        "decode_s": 1.0660176277160645,
+        "total_s": 1.1608293056488037
+      },
+      "tool": {
+        "start_ts": 1766988428.2126584,
+        "action": "echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached",
+        "end_ts": 1766988428.4162576,
+        "total_s": 0.203599214553833,
+        "returncode": 0
+      }
+    }
+  ]
+}

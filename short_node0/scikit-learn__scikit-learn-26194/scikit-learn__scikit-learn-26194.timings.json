@@ -1,0 +1,246 @@
+{
+  "instance_id": "scikit-learn__scikit-learn-26194",
+  "env_prepare": {
+    "start_ts": 1766988286.6859374,
+    "end_ts": 1766988391.124619,
+    "total_s": 104.43868160247803,
+    "environment_class": "docker",
+    "image": "docker.io/swebench/sweb.eval.x86_64.scikit-learn_1776_scikit-learn-26194:latest"
+  },
+  "steps": [
+    {
+      "step_index": 1,
+      "query": {
+        "start_ts": 1766988391.1262739,
+        "first_token_ts": 1766988391.3032532,
+        "last_token_ts": 1766988392.9837115,
+        "prefill_s": 0.17697930335998535,
+        "decode_s": 1.6804583072662354,
+        "total_s": 1.8574376106262207
+      },
+      "tool": {
+        "start_ts": 1766988392.9837887,
+        "action": "find /testbed -name \"_ranking.py\" | grep -v \"__pycache__\"",
+        "end_ts": 1766988393.297131,
+        "total_s": 0.3133423328399658,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 2,
+      "query": {
+        "start_ts": 1766988393.2998047,
+        "first_token_ts": 1766988393.4194582,
+        "last_token_ts": 1766988395.8007252,
+        "prefill_s": 0.11965346336364746,
+        "decode_s": 2.3812670707702637,
+        "total_s": 2.500920534133911
+      },
+      "tool": {
+        "start_ts": 1766988395.8007824,
+        "action": "nl -ba /testbed/sklearn/metrics/_ranking.py | grep -A 20 \"def roc_curve\" | head -n 30",
+        "end_ts": 1766988395.962315,
+        "total_s": 0.16153264045715332,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 3,
+      "query": {
+        "start_ts": 1766988395.964231,
+        "first_token_ts": 1766988396.03896,
+        "last_token_ts": 1766988397.66522,
+        "prefill_s": 0.07472896575927734,
+        "decode_s": 1.6262600421905518,
+        "total_s": 1.700989007949829
+      },
+      "tool": {
+        "start_ts": 1766988397.6652725,
+        "action": "grep -n \"thresholds\" /testbed/sklearn/metrics/_ranking.py | head -n 20",
+        "end_ts": 1766988397.8288176,
+        "total_s": 0.1635451316833496,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 4,
+      "query": {
+        "start_ts": 1766988397.8316495,
+        "first_token_ts": 1766988397.911094,
+        "last_token_ts": 1766988399.5427103,
+        "prefill_s": 0.07944440841674805,
+        "decode_s": 1.6316163539886475,
+        "total_s": 1.7110607624053955
+      },
+      "tool": {
+        "start_ts": 1766988399.542777,
+        "action": "grep -n \"_binary_clf_curve\" -A 50 /testbed/sklearn/metrics/_ranking.py",
+        "end_ts": 1766988399.7226095,
+        "total_s": 0.17983245849609375,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 5,
+      "query": {
+        "start_ts": 1766988399.725059,
+        "first_token_ts": 1766988399.9284344,
+        "last_token_ts": 1766988411.2916343,
+        "prefill_s": 0.20337533950805664,
+        "decode_s": 11.363199949264526,
+        "total_s": 11.566575288772583
+      },
+      "tool": {
+        "start_ts": 1766988411.2917418,
+        "action": "cat <<'EOF' > reproduce_issue.py\nimport numpy as np\nfrom sklearn.metrics import roc_curve\n\n# Set random seed for reproducibility\nrng = np.random.RandomState(42)\n\n# Generate binary labels\ny_true = rng.randint(0, 2, size=10)\n\n# Generate random scores between 0 and 1 (probability estimates)\ny_score = rng.rand(10)\n\n# Print the scores to verify they're all between 0 and 1\nprint(\"Scores:\", y_score)\n\n# Compute ROC curve\n_, _, thresholds = roc_curve(y_true, y_score)\n\n# Print the thresholds\nprint(\"Thresholds:\", thresholds)\n\n# Check if any threshold exceeds 1\nprint(\"Any threshold > 1?\", np.any(thresholds > 1))\n\n# Check the maximum threshold value\nprint(\"Max threshold:\", np.max(thresholds))\nEOF",
+        "end_ts": 1766988411.578675,
+        "total_s": 0.28693318367004395,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 6,
+      "query": {
+        "start_ts": 1766988411.5818422,
+        "first_token_ts": 1766988411.7514868,
+        "last_token_ts": 1766988412.517296,
+        "prefill_s": 0.16964459419250488,
+        "decode_s": 0.7658092975616455,
+        "total_s": 0.9354538917541504
+      },
+      "tool": {
+        "start_ts": 1766988412.5173557,
+        "action": "python reproduce_issue.py",
+        "end_ts": 1766988413.3668845,
+        "total_s": 0.8495287895202637,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 7,
+      "query": {
+        "start_ts": 1766988413.3696992,
+        "first_token_ts": 1766988413.4925046,
+        "last_token_ts": 1766988421.9056208,
+        "prefill_s": 0.12280535697937012,
+        "decode_s": 8.413116216659546,
+        "total_s": 8.535921573638916
+      },
+      "tool": {
+        "start_ts": 1766988421.9057112,
+        "action": "sed -i '1086s/thresholds = np.r_\\[thresholds\\[0\\] + 1, thresholds\\]/if thresholds.max() <= 1:\\n        thresholds = np.clip(np.r_\\[thresholds\\[0\\] + 1, thresholds\\], 0, 1)\\n    else:\\n        thresholds = np.r_\\[thresholds\\[0\\] + 1, thresholds\\]/' /testbed/sklearn/metrics/_ranking.py",
+        "end_ts": 1766988422.079477,
+        "total_s": 0.1737658977508545,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 8,
+      "query": {
+        "start_ts": 1766988422.0817826,
+        "first_token_ts": 1766988422.5580263,
+        "last_token_ts": 1766988423.381171,
+        "prefill_s": 0.4762437343597412,
+        "decode_s": 0.8231446743011475,
+        "total_s": 1.2993884086608887
+      },
+      "tool": {
+        "start_ts": 1766988423.3812208,
+        "action": "python reproduce_issue.py",
+        "end_ts": 1766988424.1247282,
+        "total_s": 0.7435073852539062,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 9,
+      "query": {
+        "start_ts": 1766988424.127344,
+        "first_token_ts": 1766988424.4064374,
+        "last_token_ts": 1766988434.614568,
+        "prefill_s": 0.27909350395202637,
+        "decode_s": 10.208130598068237,
+        "total_s": 10.487224102020264
+      },
+      "tool": {
+        "start_ts": 1766988434.6146345,
+        "action": "cat <<'EOF' > test_non_probability.py\nimport numpy as np\nfrom sklearn.metrics import roc_curve\n\n# Set random seed for reproducibility\nrng = np.random.RandomState(42)\n\n# Generate binary labels\ny_true = rng.randint(0, 2, size=10)\n\n# Generate random scores that can exceed 1 (not probability estimates)\ny_score = rng.rand(10) * 2  # Multiply by 2 to ensure some values > 1\n\n# Print the scores to verify they can exceed 1\nprint(\"Scores:\", y_score)\n\n# Compute ROC curve\n_, _, thresholds = roc_curve(y_true, y_score)\n\n# Print the thresholds\nprint(\"Thresholds:\", thresholds)\n\n# Check if any threshold exceeds 1\nprint(\"Any threshold > 1?\", np.any(thresholds > 1))\n\n# Check the maximum threshold value\nprint(\"Max threshold:\", np.max(thresholds))\nEOF",
+        "end_ts": 1766988434.7785738,
+        "total_s": 0.1639392375946045,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 10,
+      "query": {
+        "start_ts": 1766988434.7805302,
+        "first_token_ts": 1766988434.9134474,
+        "last_token_ts": 1766988435.2493649,
+        "prefill_s": 0.13291716575622559,
+        "decode_s": 0.33591747283935547,
+        "total_s": 0.46883463859558105
+      },
+      "tool": {
+        "start_ts": 1766988435.2494283,
+        "action": "python test_non_probability.py",
+        "end_ts": 1766988435.9336092,
+        "total_s": 0.6841809749603271,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 11,
+      "query": {
+        "start_ts": 1766988435.9353304,
+        "first_token_ts": 1766988436.0820708,
+        "last_token_ts": 1766988445.0385041,
+        "prefill_s": 0.14674043655395508,
+        "decode_s": 8.956433296203613,
+        "total_s": 9.103173732757568
+      },
+      "tool": {
+        "start_ts": 1766988445.0385664,
+        "action": "cat <<'EOF' > test_binary_scores.py\nimport numpy as np\nfrom sklearn.metrics import roc_curve\n\n# Set random seed for reproducibility\nrng = np.random.RandomState(42)\n\n# Generate binary labels\ny_true = rng.randint(0, 2, size=10)\n\n# Generate binary scores (0 or 1)\ny_score = rng.randint(0, 2, size=10)\n\n# Print the scores\nprint(\"Scores:\", y_score)\n\n# Compute ROC curve\n_, _, thresholds = roc_curve(y_true, y_score)\n\n# Print the thresholds\nprint(\"Thresholds:\", thresholds)\n\n# Check if any threshold exceeds 1\nprint(\"Any threshold > 1?\", np.any(thresholds > 1))\n\n# Check the maximum threshold value\nprint(\"Max threshold:\", np.max(thresholds))\nEOF",
+        "end_ts": 1766988445.2186074,
+        "total_s": 0.18004107475280762,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 12,
+      "query": {
+        "start_ts": 1766988445.2207189,
+        "first_token_ts": 1766988445.3108351,
+        "last_token_ts": 1766988445.7352674,
+        "prefill_s": 0.09011626243591309,
+        "decode_s": 0.42443227767944336,
+        "total_s": 0.5145485401153564
+      },
+      "tool": {
+        "start_ts": 1766988445.7353156,
+        "action": "python test_binary_scores.py",
+        "end_ts": 1766988446.3664544,
+        "total_s": 0.631138801574707,
+        "returncode": 0
+      }
+    },
+    {
+      "step_index": 13,
+      "query": {
+        "start_ts": 1766988446.3689866,
+        "first_token_ts": 1766988446.5667179,
+        "last_token_ts": 1766988457.1783166,
+        "prefill_s": 0.19773125648498535,
+        "decode_s": 10.61159873008728,
+        "total_s": 10.809329986572266
+      },
+      "tool": {
+        "start_ts": 1766988457.1783805,
+        "action": "echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && git add -A && git diff --cached",
+        "end_ts": 1766988457.47223,
+        "total_s": 0.29384946823120117,
+        "returncode": 0
+      }
+    }
+  ]
+}
