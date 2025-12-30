@@ -78,7 +78,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument(
         "--sample-method",
-        choices=["random", "head", "tail"],
+        choices=["random", "head", "tail", "extremes"],
         default="random",
         help="How to pick the pool before sorting (long-short mode)",
     )
@@ -102,11 +102,22 @@ def main() -> None:
     if args.mode == "long-short":
         if args.count % 2 != 0:
             raise SystemExit("count must be even for long-short mode")
-        selected = select_rows(rows, args.count, args.sample_method, args.seed)
-        selected_sorted = sorted(selected, key=lambda row: row["context_tokens"])
+        if args.count > len(rows):
+            raise SystemExit(f"count {args.count} exceeds available rows {len(rows)}")
         half = args.count // 2
-        short_ids = [row["instance_id"] for row in selected_sorted[:half]]
-        long_ids = [row["instance_id"] for row in reversed(selected_sorted[-half:])]
+        if args.sample_method == "extremes":
+            sorted_rows = sorted(rows, key=lambda row: row["context_tokens"])
+            short_rows = sorted_rows[:half]
+            long_rows = sorted_rows[-half:]
+            selected_sorted = short_rows + long_rows
+        else:
+            selected = select_rows(rows, args.count, args.sample_method, args.seed)
+            selected_sorted = sorted(selected, key=lambda row: row["context_tokens"])
+            short_rows = selected_sorted[:half]
+            long_rows = selected_sorted[-half:]
+
+        short_ids = [row["instance_id"] for row in short_rows]
+        long_ids = [row["instance_id"] for row in reversed(long_rows)]
         selected_ids = [row["instance_id"] for row in selected_sorted]
 
         write_id_list(outdir / "short_ids.txt", short_ids)

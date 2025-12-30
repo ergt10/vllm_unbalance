@@ -8,18 +8,19 @@ Features:
 """
 
 import asyncio
+import hashlib
+import json
 import math
 import os
 import time
 import logging
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Callable, Awaitable
 
 import httpx
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 from prometheus_client.parser import text_string_to_metric_families
-from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
 # Configuration
 VLLM_BACKENDS = os.getenv(
@@ -27,24 +28,33 @@ VLLM_BACKENDS = os.getenv(
     "http://localhost:8100"
 ).split(",")
 
-PAUSE_AT_USAGE = 0.95
-RESUME_AT_USAGE = 0.90
+PAUSE_TRIGGER_USAGE = 0.95
+PAUSE_TARGET_USAGE = 0.90
+PAUSE_COOLDOWN_S = 2.5
+PAUSE_STEP = 0.2
+RESUME_TRIGGER_USAGE = 0.85
+RESUME_TARGET_USAGE = 0.90
+RESUME_COOLDOWN_S = 10.0
+RESUME_STEP = 0.2
+TRANSFER_TRIGGER_USAGE = 0.50
+TRANSFER_TARGET_USAGE = 0.70
+TRANSFER_COOLDOWN_S = 10.0
+TRANSFER_STEP = 0.2
 KV_CACHE_TOKEN_BUDGET = 788976
 OUTPUT_TOKEN_ESTIMATE = 500
-LOW_USAGE_RELEASE = 0.5
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-_TOKENIZER_CACHE: Dict[str, PreTrainedTokenizerBase] = {}
 
 
 @dataclass
 class ProgramState:
     context_len: int
     step_count: int = 0
-    inflight: int = 0
+    inflight: bool = False
     paused: bool = False
     pause_requested: bool = False
+    transfer_target: Optional[str] = None
     resume_event: asyncio.Event = field(default_factory=asyncio.Event)
 
     @property
@@ -67,7 +77,7 @@ class BackendState:
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
     last_resume_time: float = 0.0
     last_pause_time: float = 0.0
-    high_usage_hits: int = 0
+    last_transfer_time: float = 0.0
 
     @property
     def metrics_url(self) -> str:
@@ -79,7 +89,7 @@ class BackendState:
 
     @property
     def total_inflight(self) -> int:
-        return sum(p.inflight for p in self.programs.values())
+        return sum(1 for p in self.programs.values() if p.inflight)
 
     @property
     def paused_count(self) -> int:
@@ -92,6 +102,7 @@ class MultiBackendRouter:
             url: BackendState(url=url) for url in backend_urls
         }
         self.program_affinity: Dict[str, str] = {}  # program_id -> backend_url
+        self._transfer_rr_index = 0
         
         self.client = httpx.AsyncClient(
             timeout=900.0,
@@ -132,27 +143,23 @@ class MultiBackendRouter:
         return value
 
     def _extract_metrics_fallback(self, text: str) -> tuple[Optional[float], Optional[float], Optional[float]]:
-        usage_vals: list[float] = []
-        running_vals: list[float] = []
-        waiting_vals: list[float] = []
+        usage = None
+        running = None
+        waiting = None
         for line in text.splitlines():
             if not line or line.startswith("#"):
                 continue
             if line.startswith("vllm:kv_cache_usage_perc"):
-                val = self._parse_metric_value(line)
-                if val is not None:
-                    usage_vals.append(val)
+                if usage is None:
+                    usage = self._parse_metric_value(line)
             elif line.startswith("vllm:num_requests_running"):
-                val = self._parse_metric_value(line)
-                if val is not None:
-                    running_vals.append(val)
+                if running is None:
+                    running = self._parse_metric_value(line)
             elif line.startswith("vllm:num_requests_waiting"):
-                val = self._parse_metric_value(line)
-                if val is not None:
-                    waiting_vals.append(val)
-        usage = max(usage_vals) if usage_vals else None
-        running = sum(running_vals) if running_vals else None
-        waiting = sum(waiting_vals) if waiting_vals else None
+                if waiting is None:
+                    waiting = self._parse_metric_value(line)
+            if usage is not None and running is not None and waiting is not None:
+                break
         return usage, running, waiting
 
     async def _monitor_loop(self):
@@ -229,35 +236,100 @@ class MultiBackendRouter:
         now = time.time()
         usage = backend.usage
 
-        if usage >= PAUSE_AT_USAGE:
-            backend.high_usage_hits += 1
-            if backend.high_usage_hits < 2:
-                return
-            if now - backend.last_pause_time < 2.5:
+        if usage >= PAUSE_TRIGGER_USAGE:
+            if now - backend.last_pause_time < PAUSE_COOLDOWN_S:
                 return
             backend.last_pause_time = now
-            self._pause_programs_on_backend(backend, usage)
-
-        elif usage < RESUME_AT_USAGE:
-            backend.high_usage_hits = 0
-            if now - backend.last_resume_time < 10.0:
+            tokens_to_pause = (
+                max(0.0, usage - PAUSE_TARGET_USAGE)
+                * KV_CACHE_TOKEN_BUDGET
+                * PAUSE_STEP
+            )
+            transfer_tokens = self._schedule_transfers_on_backend(backend, now)
+            tokens_to_pause = max(0.0, tokens_to_pause - transfer_tokens)
+            self._pause_programs_on_backend(backend, tokens_to_pause)
+        elif usage < RESUME_TRIGGER_USAGE:
+            if now - backend.last_resume_time < RESUME_COOLDOWN_S:
                 return
             backend.last_resume_time = now
             self._resume_programs_on_backend(backend, usage)
-        else:
-            backend.high_usage_hits = 0
 
-    def _pause_programs_on_backend(self, backend: BackendState, usage: float):
+    def _pick_transfer_target(self, source_backend: BackendState) -> Optional[BackendState]:
+        eligible = [
+            b for b in self.backends.values()
+            if b.url != source_backend.url
+            and b.healthy
+            and b.paused_count == 0
+            and b.usage < TRANSFER_TRIGGER_USAGE
+        ]
+        if not eligible:
+            return None
+        idx = self._transfer_rr_index % len(eligible)
+        self._transfer_rr_index += 1
+        return eligible[idx]
+
+    def _schedule_transfers_on_backend(self, backend: BackendState, now: float) -> float:
+        if now - backend.last_transfer_time < TRANSFER_COOLDOWN_S:
+            return 0.0
+        target = self._pick_transfer_target(backend)
+        if target is None:
+            return 0.0
+        transfer_budget = (
+            max(0.0, TRANSFER_TARGET_USAGE - target.usage)
+            * KV_CACHE_TOKEN_BUDGET
+            * TRANSFER_STEP
+        )
+        if transfer_budget <= 0:
+            return 0.0
+
+        active = [
+            (pid, state)
+            for pid, state in backend.programs.items()
+            if not state.paused
+            and not state.pause_requested
+            and state.transfer_target is None
+        ]
+        if not active:
+            return 0.0
+
+        active.sort(key=lambda item: item[1].context_len)
+        transfer_tokens = 0.0
+        transfer_pids = []
+
+        for pid, state in active:
+            if transfer_tokens >= transfer_budget:
+                break
+            state.transfer_target = target.url
+            transfer_tokens += state.est_tokens
+            transfer_pids.append(pid)
+
+        if transfer_pids:
+            backend.last_transfer_time = now
+            logger.info(
+                f"[{backend.url}] Scheduled transfer of {len(transfer_pids)} programs "
+                f"to {target.url} (budget={transfer_budget}, tokens={transfer_tokens}): {transfer_pids}"
+            )
+
+        return transfer_tokens
+
+    def _pause_programs_on_backend(
+        self,
+        backend: BackendState,
+        tokens_to_pause: float,
+    ):
         """Pause low-priority programs on this backend."""
         active = [
             (pid, state)
             for pid, state in backend.programs.items()
-            if not state.paused and not state.pause_requested
+            if not state.paused
+            and not state.pause_requested
+            and state.transfer_target is None
         ]
         if not active:
             return
 
-        tokens_to_pause = KV_CACHE_TOKEN_BUDGET * 0.01
+        if tokens_to_pause <= 0:
+            return
         active.sort(key=lambda item: (-item[1].step_count, item[1].est_tokens))
 
         paused_tokens = 0
@@ -268,7 +340,7 @@ class MultiBackendRouter:
                 break
 
             pid, state = active[i]
-            if state.inflight > 0:
+            if state.inflight:
                 state.pause_requested = True
             else:
                 state.paused = True
@@ -280,25 +352,18 @@ class MultiBackendRouter:
         if newly_paused:
             logger.info(
                 f"[{backend.url}] Paused {len(newly_paused)} programs "
-                f"(usage={usage:.2%}, tokens={paused_tokens}): {newly_paused}"
+                f"(usage={backend.usage:.2%}, tokens={paused_tokens}): {newly_paused}"
             )
 
     def _resume_programs_on_backend(self, backend: BackendState, usage: float):
         """Resume paused programs on this backend."""
-        if usage < 0.5:
-            step_pct = 0.20
-        elif usage < 0.6:
-            step_pct = 0.10
-        elif usage < 0.75:
-            step_pct = 0.05
-        elif usage < 0.8:
-            step_pct = 0.03
-        elif usage < 0.85:
-            step_pct = 0.02
-        else:
-            step_pct = 0.01
-
-        max_resume_tokens = KV_CACHE_TOKEN_BUDGET * step_pct
+        max_resume_tokens = (
+            max(0.0, RESUME_TARGET_USAGE - usage)
+            * KV_CACHE_TOKEN_BUDGET
+            * RESUME_STEP
+        )
+        if max_resume_tokens <= 0:
+            return
 
         paused = [
             (pid, state)
@@ -347,12 +412,14 @@ class MultiBackendRouter:
             del self.program_affinity[program_id]
 
         # New program: assign to least loaded backend
-        backend = self._pick_least_loaded_backend()
+        if program_id == "default":
+            logger.warning("Missing job_id in extra_body; routing will not be balanced across backends.")
+        backend = self._pick_least_loaded_backend(program_id)
         self.program_affinity[program_id] = backend.url
         logger.debug(f"Assigned {program_id} to {backend.url}")
         return backend
 
-    def _pick_least_loaded_backend(self) -> BackendState:
+    def _pick_least_loaded_backend(self, program_id: str) -> BackendState:
         """Select a healthy backend, prefer those with no paused programs."""
         healthy = [b for b in self.backends.values() if b.healthy]
         if not healthy:
@@ -365,37 +432,101 @@ class MultiBackendRouter:
         def score(b: BackendState) -> float:
             return b.running_requests + b.waiting_requests * 4.0
 
-        return min(candidates, key=score)
+        scored = [(b, score(b)) for b in candidates]
+        min_score = min(val for _, val in scored)
+        best = [b for b, val in scored if val == min_score]
+        if len(best) == 1:
+            return best[0]
+        digest = hashlib.sha256(program_id.encode("utf-8")).digest()
+        idx = int.from_bytes(digest[:8], "big") % len(best)
+        return best[idx]
 
-    # -------------------------------------------------------------------------
-    # Token Estimation
-    # -------------------------------------------------------------------------
+    async def _apply_pending_transfer(
+        self,
+        program_id: str,
+        backend: BackendState,
+        is_last_step: bool,
+    ) -> BackendState:
+        async with backend.lock:
+            state = backend.programs.get(program_id)
+            if state is None or state.transfer_target is None:
+                return backend
+            if is_last_step:
+                state.transfer_target = None
+                return backend
+            target_url = state.transfer_target
 
-    def estimate_tokens(self, text: str, model_name: str) -> int:
-        try:
-            if model_name not in _TOKENIZER_CACHE:
-                _TOKENIZER_CACHE[model_name] = AutoTokenizer.from_pretrained(
-                    model_name, trust_remote_code=True
-                )
-            tok = _TOKENIZER_CACHE[model_name]
-            return len(tok.encode(text, add_special_tokens=False))
-        except Exception as exc:
-            logger.warning(f"Fallback token estimate for {model_name}: {exc}")
-            return len(text) // 4
+        target_backend = self.backends.get(target_url)
+        if target_backend is None or not target_backend.healthy:
+            async with backend.lock:
+                state = backend.programs.get(program_id)
+                if state and state.transfer_target == target_url:
+                    state.transfer_target = None
+            return backend
+
+        if target_backend.url == backend.url:
+            async with backend.lock:
+                state = backend.programs.get(program_id)
+                if state:
+                    state.transfer_target = None
+            return backend
+
+        first, second = sorted([backend, target_backend], key=lambda b: b.url)
+        async with first.lock:
+            async with second.lock:
+                state = backend.programs.get(program_id)
+                if (
+                    state is None
+                    or state.transfer_target != target_url
+                    or state.inflight
+                    or state.paused
+                ):
+                    return backend
+                del backend.programs[program_id]
+                target_backend.programs[program_id] = state
+                self.program_affinity[program_id] = target_url
+                state.transfer_target = None
+                state.resume_event.set()
+                return target_backend
 
     # -------------------------------------------------------------------------
     # Request Proxying
     # -------------------------------------------------------------------------
 
     @staticmethod
+    def _extract_total_tokens(payload: Any) -> Optional[int]:
+        if not isinstance(payload, dict):
+            return None
+        usage = payload.get("usage")
+        if not isinstance(usage, dict):
+            return None
+        if "total_tokens" in usage:
+            val = usage.get("total_tokens")
+            if isinstance(val, (int, float)) and math.isfinite(val):
+                return int(val)
+        return None
+
+    @staticmethod
     def _filtered_headers(headers: httpx.Headers) -> Dict[str, str]:
         hop_by_hop = {"content-length", "transfer-encoding", "connection"}
         return {k: v for k, v in headers.items() if k.lower() not in hop_by_hop}
 
-    async def proxy_request(self, backend: BackendState, payload: Dict[str, Any]) -> Response:
+    async def proxy_request(
+        self,
+        backend: BackendState,
+        payload: Dict[str, Any],
+        *,
+        on_total_tokens: Callable[[int], Awaitable[None]] | None = None,
+    ) -> Response:
         url = backend.completions_url
 
         if payload.get("stream"):
+            stream_options = payload.get("stream_options")
+            if stream_options is None:
+                payload["stream_options"] = {"include_usage": True}
+            elif isinstance(stream_options, dict):
+                stream_options.setdefault("include_usage", True)
+
             resp_cm = self.client.stream("POST", url, json=payload)
             resp = await resp_cm.__aenter__()
             headers = self._filtered_headers(resp.headers)
@@ -403,11 +534,33 @@ class MultiBackendRouter:
             media_type = resp.headers.get("content-type")
 
             async def iterator():
+                buffer = b""
+                total_tokens: Optional[int] = None
                 try:
                     async for chunk in resp.aiter_raw():
+                        buffer += chunk
+                        while b"\n\n" in buffer:
+                            event, buffer = buffer.split(b"\n\n", 1)
+                            for line in event.split(b"\n"):
+                                if not line.startswith(b"data:"):
+                                    continue
+                                data = line[5:].strip()
+                                if not data or data == b"[DONE]":
+                                    continue
+                                if total_tokens is not None:
+                                    continue
+                                try:
+                                    payload_obj = json.loads(data)
+                                except Exception:
+                                    continue
+                                extracted = self._extract_total_tokens(payload_obj)
+                                if extracted is not None:
+                                    total_tokens = extracted
                         yield chunk
                 finally:
                     await resp_cm.__aexit__(None, None, None)
+                    if total_tokens is not None and on_total_tokens is not None:
+                        await on_total_tokens(total_tokens)
 
             return StreamingResponse(
                 iterator(),
@@ -417,6 +570,16 @@ class MultiBackendRouter:
             )
 
         resp = await self.client.post(url, json=payload)
+        total_tokens: Optional[int] = None
+        try:
+            payload_obj = resp.json()
+        except Exception:
+            payload_obj = None
+        extracted = self._extract_total_tokens(payload_obj)
+        if extracted is not None:
+            total_tokens = extracted
+        if total_tokens is not None and on_total_tokens is not None:
+            await on_total_tokens(total_tokens)
         return Response(
             content=resp.content,
             status_code=resp.status_code,
@@ -443,13 +606,12 @@ async def shutdown_event():
     await router.stop()
 
 
-def _get_program_id(payload: Dict[str, Any], request: Request) -> str:
-    if "x-program-id" in request.headers:
-        return request.headers["x-program-id"]
-    if "router_program_id" in payload:
-        return str(payload["router_program_id"])
+def _get_program_id(payload: Dict[str, Any], _request: Request) -> str:
     if "job_id" in payload:
         return str(payload["job_id"])
+    extra_body = payload.get("extra_body", {})
+    if isinstance(extra_body, dict) and "job_id" in extra_body:
+        return str(extra_body["job_id"])
     return "default"
 
 
@@ -461,70 +623,59 @@ async def route_chat_completions(request: Request):
         raise HTTPException(status_code=400, detail="Invalid JSON") from exc
 
     program_id = _get_program_id(payload, request)
-    model_name = payload.get("model", "default")
-
-    # Extract prompt text for token estimation
-    prompt_text = ""
-    if "messages" in payload:
-        for m in payload["messages"]:
-            prompt_text += str(m.get("content", ""))
-    elif "prompt" in payload:
-        p = payload["prompt"]
-        prompt_text = p if isinstance(p, str) else "".join(str(x) for x in p)
-
-    input_tokens = router.estimate_tokens(prompt_text, model_name)
-
     extra_body = payload.get("extra_body", {})
-    is_last_step = extra_body.get("is_last_step", False) if extra_body else False
+    if isinstance(extra_body, dict) and "is_last_step" in extra_body:
+        is_last_step = extra_body.get("is_last_step", False)
+    else:
+        is_last_step = payload.get("is_last_step", False)
 
     # Get the backend for this program (sticky routing)
     backend = router._get_backend_for_program(program_id)
-
-    first_pass = True
+    backend = await router._apply_pending_transfer(
+        program_id, backend, is_last_step
+    )
     while True:
         async with backend.lock:
             if program_id not in backend.programs:
                 backend.programs[program_id] = ProgramState(
-                    context_len=input_tokens, step_count=0
+                    context_len=0, step_count=0
                 )
             state = backend.programs[program_id]
-            state.context_len = input_tokens
 
-            if first_pass:
-                step_val = None
-                if isinstance(extra_body, dict):
-                    raw_step = extra_body.get("step")
-                    if isinstance(raw_step, int) and raw_step >= 0:
-                        step_val = raw_step
-                if step_val is not None:
-                    state.step_count = max(state.step_count, step_val)
-                else:
-                    state.step_count += 1
-                first_pass = False
+            if is_last_step and state.paused:
+                state.paused = False
+                state.pause_requested = False
+                state.resume_event.set()
 
             if not state.paused:
-                state.inflight += 1
+                state.inflight = True
+                state.step_count += 1
                 break
 
             wait_event = state.resume_event
 
         await wait_event.wait()
 
+    async def update_total_tokens(tokens: int) -> None:
+        async with backend.lock:
+            state = backend.programs.get(program_id)
+            if state is not None:
+                state.context_len = tokens
+
     try:
-        return await router.proxy_request(backend, payload)
+        return await router.proxy_request(backend, payload, on_total_tokens=update_total_tokens)
     finally:
         async with backend.lock:
             if program_id in backend.programs:
                 state = backend.programs[program_id]
-                state.inflight = max(0, state.inflight - 1)
+                state.inflight = False
 
                 if is_last_step:
                     del backend.programs[program_id]
-                    # Clean up affinity
                     if program_id in router.program_affinity:
                         del router.program_affinity[program_id]
                     logger.info(f"[{backend.url}] Program {program_id} completed")
-                elif state.pause_requested and state.inflight == 0:
+                elif state.pause_requested and not state.inflight:
                     state.paused = True
                     state.resume_event.clear()
 
